@@ -1,22 +1,23 @@
-const Koa = require('koa')
-const app = new Koa()
-const views = require('koa-views')
-const json = require('koa-json')
-const onerror = require('koa-onerror')
-const bodyparser = require('koa-bodyparser')
-const logger = require('koa-logger')
+const Koa = require('koa');
+const app = new Koa();
+const views = require('koa-views');
+const json = require('koa-json');
+const onerror = require('koa-onerror');
+const bodyparser = require('koa-bodyparser');
+const logger = require('koa-logger');
 const userAgent = require('koa2-useragent');
 
-const order = require('./routes/order')
+const user = require('./routes/user');
+const order = require('./routes/order');
 
 // error handler
-onerror(app)
+onerror(app);
 
 // middlewares
 app.use(bodyparser({
     enableTypes: ['json', 'form', 'text']
-}))
-app.use(json())
+}));
+app.use(json());
 app.use(require('koa-static')(__dirname + '/public'), {maxAge: 1000 * 60 * 60})
 
 app.use(views(__dirname + '/views', {
@@ -32,7 +33,7 @@ app.use(async(ctx, next) => {
     ctx.set('Access-Control-Allow-Origin', '*');
     ctx.set('Access-Control-Allow-Credentials', 'true');
     ctx.set('Access-Control-Allow-Methods', 'PUT,DELETE,POST,GET,OPTIONS');
-    if (ctx.request.method == "OPTIONS") {
+    if (ctx.request.method === "OPTIONS") {
         ctx.response.status = 200
     }
     await next();
@@ -40,7 +41,8 @@ app.use(async(ctx, next) => {
 
 
 // routes
-app.use(order.routes(), order.allowedMethods())
+app.use(user.routes(), user.allowedMethods());
+app.use(order.routes(), order.allowedMethods());
 
 
 // error-handling
@@ -49,4 +51,4 @@ app.on('error', (err, ctx) => {
 });
 
 
-module.exports = app
+module.exports = app;

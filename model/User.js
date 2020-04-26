@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 var connect_url = require('../conf/proj.json').mongodb;
 var db = mongoose.createConnection(connect_url);
 
-var AccountSchema = new Schema({
+var UserSchema = new Schema({
     username : String,
     password : String,
     nickName : {  // 昵称
@@ -27,8 +27,9 @@ var AccountSchema = new Schema({
         type: Number,
         default: Date.now()
     },
+    loginAt: Number,
     childAccount : []
 });
 
-var AccountModel = db.model('Account', AccountSchema);
-module.exports = AccountModel;
+var UserModel = db.model('User', UserSchema);
+module.exports = UserModel;

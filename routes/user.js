@@ -1,53 +1,102 @@
 const router = require('koa-router')();
-const http = require("../util/httpUtils");
-const crypto = require("crypto");
+const UserModel = require('../model/User.js');
 
-router.prefix('/order')
+router.prefix('/user');
 
-var checkword = "QE4CwVWGy1lBBIW5uoYFsZEwfyI7ScuU"
-
-router.get('/create', async function (ctx, next) {
-    let {orderid, d_company, d_contact, d_tel, d_address} = ctx.request.query
-    let https_options = {
-        hostname: 'bsp-oisp.sf-express.com',
-        path: '/bsp-oisp/sfexpressService',
-        method: 'post'
-    };
-    let xml = '<?xml version="1.0" encoding="UTF-8"?> ' +
-        '<Request service="明星说" lang="zh-CN"> ' +
-        '<Head>MXSBJKJ</Head> ' +
-        '<Body>' +
-        '<Order ' +
-        'orderid=' + orderid +
-        ' d_company=' + d_company +
-        ' d_contact=' + d_contact +
-        ' d_tel=' + d_tel +
-        ' d_address=' + d_address +
-        '></Order>' +
-        '</Body> ' +
-        '</Request>'
-    console.log(xml, '-------------------------data')
-    let str = md5(xml + checkword)
-    console.log(str, '-------------------------str')
-    let base = Buffer.from(str).toString('base64')
-    console.log(base, '-------------------------base')
-    let data = {
-        xml: xml,
-        verifyCode: base
+router.post('/', async (ctx, next) => {
+    let { username, password, role, remarks, nick_name } = ctx.request.body;
+    let result = await UserModel.find({username});
+    if(result.length > 0) {
+        ctx.body = {code: 2, msg: "该账户名已存在，请检查输入是否有误"}
+    } else {
+        let data = await UserModel.create({ username, nick_name, password, role, remarks, loginAt: Date.now() });
+        if(data) {
+            ctx.body = {code: 1, msg: '账户创建成功', data}
+        } else {
+            ctx.response.status = 400;
+            ctx.body = {code: -1, msg: '账户创建失败，请重试'}
+        }
     }
-    console.log(data, '-------------------------data')
-    let result = await http.doHttp_withdata(https_options, data);
-    console.log(result, '-------------------------result')
-})
+});
 
-function md5(str) {
-    let md5 = crypto.createHash('md5');
-    md5.update(str, "utf8");
-    str = md5.digest('base64');
-    console.log(str, '-------------------------str1')
-    str = str.substr(8, 16)
-    console.log(str, '-------------------------str2')
-    return str
-}
+router.get('/', async (ctx, next) => {
+    let { username } = ctx.query, result;
+    if(username) {
+        result = await UserModel.find({username: {$regex: new RegExp(username)}})
+    } else {
+        result = await UserModel.find();
+    }
+    if(result.length > 0) {
+        ctx.body = {code: 1, msg: '查询成功', data: result}
+    } else {
+        ctx.response.status = 400;
+        ctx.body = {code: -1, msg: '没有查询到相关数据'}
+    }
+});
+
+router.put('/power', async (ctx, next) => {
+    let { id, power } = ctx.request.body;
+    let updateAt = Date.now();
+    let data = await UserModel.findByIdAndUpdate(id, { power, updateAt }, {new: true});
+    if(data) {
+        ctx.body = {code: 1, msg: '权限修改成功', data}
+    } else {
+        ctx.response.status = 400;
+        ctx.body = {code: -1, msg: '权限修改失败，请重试'}
+    }
+});
+
+router.put('/remarks', async (ctx, next) => {
+    let { id, remarks } = ctx.request.body;
+    let updateAt = Date.now();
+    let data = await UserModel.findByIdAndUpdate(id, { remarks, updateAt }, {new: true});
+    if(data) {
+        ctx.body = {code: 1, msg: '备注修改成功', data}
+    } else {
+        ctx.response.status = 400;
+        ctx.body = {code: -1, msg: '备注修改失败，请重试'}
+    }
+});
+
+router.put('/', async (ctx, next) => {
+    let { id, username, password } = ctx.request.body;
+    let updateAt = Date.now();
+    let data = await UserModel.findByIdAndUpdate(id, { username, password, updateAt }, {new: true});
+    if(data) {
+        ctx.body = {code: 1, msg: '密码修改成功', data}
+    } else {
+        ctx.response.status = 400;
+        ctx.body = {code: -1, msg: '密码修改失败，请重试'}
+    }
+});
+
+router.delete('/', async (ctx, next) => {
+    let { _id } = ctx.query;
+    let result = await UserModel.findByIdAndRemove(_id);
+    if(result) {
+        ctx.body = {code: 1, msg: '删除成功'}
+    } else {
+        ctx.response.status = 400;
+        ctx.body = {code: -1, msg: "删除失败"}
+    }
+});
+
+router.post('/login', async (ctx, next) => {
+    let { username, password } = ctx.request.body;
+    if(username && password) {
+        let result = await UserModel.find({username, password});
+        if(result.length > 0) {
+            result[0].loginAt = Date.now();
+            await result[0].save();
+            ctx.body = {code: 1, msg: '登录成功', data: result}
+        } else {
+            ctx.response.status = 400;
+            ctx.body = {code: -1, msg: '用户名或密码不正确'}
+        }
+    } else {
+        ctx.response.status = 400;
+        ctx.body = {code: -1, msg: '用户名或密码不能为空'}
+    }
+});
 
 module.exports = router;
