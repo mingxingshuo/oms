@@ -1,13 +1,19 @@
-const router = require('koa-router')();
 const http = require("../util/httpUtils");
 const crypto = require("crypto");
+const xml2js = require("xml2js");
+const builder = new xml2js.Builder();
+const parser = new xml2js.Parser();
 
-router.prefix('/order')
+function md5(str) {
+    let md5 = crypto.createHash('md5');
+    md5.update(str, "utf8");
+    str = md5.digest('base64');
+    return str
+}
 
 var checkword = "QE4CwVWGy1lBBIW5uoYFsZEwfyI7ScuU"
 
-router.get('/create', async function (ctx, next) {
-    let {orderid, d_company, d_contact, d_tel, d_address} = ctx.request.query
+async function test() {
     let https_options = {
         hostname: 'bsp-oisp.sf-express.com',
         path: '/bsp-oisp/sfexpressService',
@@ -17,12 +23,13 @@ router.get('/create', async function (ctx, next) {
         '<Request service="OrderService" lang="zh-CN"> ' +
         '<Head>MXSBJKJ</Head> ' +
         '<Body>' +
-        '<Order ' +
-        'orderid=' + orderid +
-        ' d_company=' + d_company +
-        ' d_contact=' + d_contact +
-        ' d_tel=' + d_tel +
-        ' d_address=' + d_address +
+        '<Order' +
+        ' j_address=北京市' +
+        ' orderid=SF-001' +
+        ' d_company=a' +
+        ' d_contact=b' +
+        ' d_tel=c' +
+        ' d_address=北京市' +
         '></Order>' +
         '</Body> ' +
         '</Request>'
@@ -35,13 +42,5 @@ router.get('/create', async function (ctx, next) {
     }
     let result = await http.doHttp_withdata(https_options, data);
     console.log(result, '-------------------------result')
-})
-
-function md5(str) {
-    let md5 = crypto.createHash('md5');
-    md5.update(str, "utf8");
-    str = md5.digest('base64');
-    return str
 }
-
-module.exports = router;
+test()
