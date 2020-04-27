@@ -1,0 +1,96 @@
+{
+    "文件功能": "前端路由根据权限获取",
+    "0": [
+        {
+            "icon": "user",
+            "keyIndex": "account",
+            "role": 0,
+            "subMenuList": [
+                {
+                    "keyIndex": "manage",
+                    "title": "账户列表",
+                    "path": "/admin/account/manage"
+                },
+                {
+                    "keyIndex": "add",
+                    "title": "新增用户",
+                    "path": "/admin/account/add"
+                }
+            ],
+            "title": "账户管理"
+        },
+        {
+            "keyIndex": "order",
+            "title": "订单管理",
+            "icon": "windows",
+            "subMenuList": [
+                {
+                    "keyIndex": "list",
+                    "title": "订单列表",
+                    "path": "/admin/order/list"
+                },
+                {
+                    "keyIndex": "create",
+                    "title": "新增订单",
+                    "path": "/admin/order/create"
+                }
+            ]
+        }
+    ],
+    "1": [
+        {
+            "icon": "user",
+            "keyIndex": "account",
+            "role": 0,
+            "subMenuList": [
+                {
+                    "keyIndex": "manage",
+                    "title": "账户列表",
+                    "path": "/admin/account/manage"
+                },
+                {
+                    "keyIndex": "add",
+                    "title": "新增用户",
+                    "path": "/admin/account/add"
+                }
+            ],
+            "title": "账户管理"
+        },
+        {
+            "keyIndex": "order",
+            "title": "订单管理",
+            "icon": "windows",
+            "subMenuList": [
+                {
+                    "keyIndex": "list",
+                    "title": "订单列表",
+                    "path": "/admin/order/list"
+                },
+                {
+                    "keyIndex": "create",
+                    "title": "新增订单",
+                    "path": "/admin/order/create"
+                }
+            ]
+        }
+    ],
+    "2": [
+        {
+            "keyIndex": "order",
+            "title": "订单管理",
+            "icon": "windows",
+            "subMenuList": [
+                {
+                    "keyIndex": "list",
+                    "title": "订单列表",
+                    "path": "/admin/order/list"
+                },
+                {
+                    "keyIndex": "create",
+                    "title": "新增订单",
+                    "path": "/admin/order/create"
+                }
+            ]
+        }
+    ]
+}
