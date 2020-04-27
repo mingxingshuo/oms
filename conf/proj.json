@@ -1,0 +1,6 @@
+{
+	"mongodb":"mongodb://jishu:VJnUsG1t@dds-2ze36af17eb05c042440-pub.mongodb.rds.aliyuncs.com:3717/tuitui_cms?replicaSet=mgset-5196081",
+	"memcache_prefix": "wx_platform",
+	"accessKeyId":"LTAI4FwJgT6Gk8xEfawakUAn",
+	"accessKeySecret":"VBBctHWO2BFkB40HW1Fk2Vlj77pcwN"
+}

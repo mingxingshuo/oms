@@ -1,4 +1,4 @@
-const http = require("../util/httpUtils");
+const request = require('request')
 const crypto = require("crypto");
 const xml2js = require("xml2js");
 const builder = new xml2js.Builder();
@@ -14,33 +14,38 @@ function md5(str) {
 var checkword = "QE4CwVWGy1lBBIW5uoYFsZEwfyI7ScuU"
 
 async function test() {
-    let https_options = {
-        hostname: 'bsp-oisp.sf-express.com',
-        path: '/bsp-oisp/sfexpressService',
-        method: 'post'
-    };
-    let xml = '<?xml version="1.0" encoding="UTF-8"?> ' +
-        '<Request service="OrderService" lang="zh-CN"> ' +
-        '<Head>MXSBJKJ</Head> ' +
-        '<Body>' +
-        '<Order' +
-        ' j_address=北京市' +
-        ' orderid=SF-001' +
-        ' d_company=a' +
-        ' d_contact=b' +
-        ' d_tel=c' +
-        ' d_address=北京市' +
-        '></Order>' +
-        '</Body> ' +
-        '</Request>'
+    let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
+    let xml = {
+        Request: {
+            $: {service: 'OrderService', lang: 'zh-CN'},
+            Head: 'MXSBJKJ',
+            Body: {
+                Order: {
+                    $: {
+                        j_tel: '111',
+                        j_address: '南京市',
+                        orderid: 'SF-001',
+                        d_company: 'a',
+                        d_contact: 'b',
+                        d_tel: '111',
+                        d_address: '南京市',
+                        cargo: 'iphone 7 plus'
+                    }
+                }
+            }
+        }
+    }
+    xml = builder.buildObject(xml)
     console.log(xml, '-------------------------data')
     let str = md5(xml + checkword)
-    console.log(str, '-------------------------str')
     let data = {
-        xml: xml,
-        verifyCode: str
+        form: {
+            xml: xml,
+            verifyCode: str
+        }
     }
-    let result = await http.doHttp_withdata(https_options, data);
-    console.log(result, '-------------------------result')
+    request.post(url, data, function (err, res, body) {
+        console.log(body,'--------body')
+    })
 }
 test()
