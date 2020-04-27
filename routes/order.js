@@ -17,7 +17,7 @@ router.get('/create', async function (ctx, next) {
         cargo_total_weight, sendstarttime, is_docall, need_return_tracking_no, return_tracking,
         temp_range, template, remark, oneself_pickup_flg, special_delivery_type_code,
         special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no
-    } = ctx.request.query || ''
+    } = ctx.request.query || ""
     let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
     let xml = {
         Request: {
@@ -85,16 +85,52 @@ router.get('/create', async function (ctx, next) {
 })
 
 router.get('/findOne', async function (ctx, next) {
-    let orderid = ctx.request.query.orderid
+    let {orderid, search_type} = ctx.request.query || ""
     let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
     let xml = {
         Request: {
-            $: {service: 'OrderService', lang: 'zh-CN'},
+            $: {service: 'OrderSearchService', lang: 'zh-CN'},
             Head: 'MXSBJKJ',
             Body: {
                 OrderSearch: {
                     $: {
                         orderid: orderid,
+                        search_type: search_type
+                    }
+                }
+            }
+        }
+    }
+    xml = builder.buildObject(xml)
+    let str = md5(xml + checkword)
+    let data = {
+        form: {
+            xml: xml,
+            verifyCode: str
+        }
+    }
+    let result = await req(url, data)
+    ctx.body = result
+})
+
+router.get('/confirm', async function (ctx, next) {
+    let {orderid, mailno, dealtype, customs_batchs, agent_no, consign_emp_code, source_zone_code, in_process_waybill_no} = ctx.request.query || ""
+    let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
+    let xml = {
+        Request: {
+            $: {service: 'OrderConfirmService', lang: 'zh-CN'},
+            Head: 'MXSBJKJ',
+            Body: {
+                OrderConfirm: {
+                    $: {
+                        orderid: orderid,
+                        mailno:mailno,
+                        dealtype:dealtype,
+                        customs_batchs:customs_batchs,
+                        agent_no:agent_no,
+                        consign_emp_code:consign_emp_code,
+                        source_zone_code:source_zone_code,
+                        in_process_waybill_no:in_process_waybill_no
                     }
                 }
             }
