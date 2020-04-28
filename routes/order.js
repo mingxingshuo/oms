@@ -166,6 +166,7 @@ router.post('/OrderState', async function (ctx, next) {
         buf += chunk;
     });
     ctx.req.on('end', function () {
+        console.log(ctx.request.body,'-------------------body')
         console.log(buf, '----------------------buf')
         parser.parseString(buf, async function (err, data) {
             console.log(err, data, '----------------------data')
