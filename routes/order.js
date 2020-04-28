@@ -124,13 +124,13 @@ router.get('/confirm', async function (ctx, next) {
                 OrderConfirm: {
                     $: {
                         orderid: orderid,
-                        mailno:mailno,
-                        dealtype:dealtype,
-                        customs_batchs:customs_batchs,
-                        agent_no:agent_no,
-                        consign_emp_code:consign_emp_code,
-                        source_zone_code:source_zone_code,
-                        in_process_waybill_no:in_process_waybill_no
+                        mailno: mailno,
+                        dealtype: dealtype,
+                        customs_batchs: customs_batchs,
+                        agent_no: agent_no,
+                        consign_emp_code: consign_emp_code,
+                        source_zone_code: source_zone_code,
+                        in_process_waybill_no: in_process_waybill_no
                     }
                 }
             }
@@ -146,6 +146,24 @@ router.get('/confirm', async function (ctx, next) {
     }
     let result = await req(url, data)
     ctx.body = result
+})
+
+router.post('/OrderState', async function (ctx, next) {
+    var buf = "";
+    ctx.req.setEncoding('utf8');
+    ctx.req.on('data', function (chunk) {
+        buf += chunk;
+    });
+    ctx.req.on('end', function () {
+        parser.parseString(buf, async function (err, data) {
+            if (err) {
+                console.log(err, ' 订单状态返回错误');
+            } else {
+                console.log(data, ' 订单状态返回成功');
+            }
+        });
+    });
+    ctx.body = '<?xml version="1.0" encoding="UTF-8" ?> <Response> <success>true</success> </Response>'
 })
 
 function md5(str) {
