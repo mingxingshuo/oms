@@ -6,7 +6,7 @@ function a() {
     let data = {
         a: 'a'
     }
-    request.post(url, data, function (err, res, body) {
+    request.post(url, xml, function (err, res, body) {
         console.log(body, '-------------body')
     })
 }
