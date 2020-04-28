@@ -160,21 +160,20 @@ router.get('/confirm', async function (ctx, next) {
 })
 
 router.post('/OrderState', async function (ctx, next) {
+    console.log(ctx.request.body,'-------------------body')
     var buf = "";
     ctx.req.setEncoding('utf8');
     ctx.req.on('data', function (chunk) {
         buf += chunk;
     });
     ctx.req.on('end', function () {
-        console.log(ctx.request.body,'-------------------body')
-        console.log(buf, '----------------------buf')
         parser.parseString(buf, async function (err, data) {
             console.log(err, data, '----------------------data')
             if (err) {
                 console.log(err, ' 订单状态返回错误');
             } else {
                 console.log(data, ' 订单状态返回成功');
-                await OrderModel.update({orderId: data.Request.orderNo}, {orderStateCode: data.Request.orderStateCode})
+                await OrderModel.update({orderId: data.Request.orderNo}, {orderStateCode: data.Request.orderStateCode[0]})
             }
         });
     });
