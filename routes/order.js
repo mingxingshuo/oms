@@ -82,7 +82,7 @@ router.get('/create', async function (ctx, next) {
         }
     }
     let result = await req(url, data)
-    if(result.type == 2){
+    if (result.type == 2) {
         await OrderModel.create({
             orderid, mailno, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
             d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
@@ -166,14 +166,14 @@ router.post('/OrderState', async function (ctx, next) {
         buf += chunk;
     });
     ctx.req.on('end', function () {
-        console.log(buf,'----------------------buf')
+        console.log(buf, '----------------------buf')
         parser.parseString(buf, async function (err, data) {
-            console.log(err,data,'----------------------data')
+            console.log(err, data, '----------------------data')
             if (err) {
                 console.log(err, ' 订单状态返回错误');
             } else {
                 console.log(data, ' 订单状态返回成功');
-                await OrderModel.update({orderId:data.Request.orderNo},{orderStateCode:data.Request.orderStateCode})
+                await OrderModel.update({orderId: data.Request.orderNo}, {orderStateCode: data.Request.orderStateCode})
             }
         });
     });
