@@ -166,8 +166,9 @@ router.post('/OrderState', async function (ctx, next) {
         buf += chunk;
     });
     ctx.req.on('end', function () {
+        console.log(buf,'----------------------buf')
         parser.parseString(buf, async function (err, data) {
-            console.log(data,'----------------------data')
+            console.log(err,data,'----------------------data')
             if (err) {
                 console.log(err, ' 订单状态返回错误');
             } else {
