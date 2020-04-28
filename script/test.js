@@ -22,9 +22,9 @@ async function test() {
             Body: {
                 Order: {
                     $: {
+                        orderid: 'SF-001',
                         j_tel: '111',
                         j_address: '南京市',
-                        orderid: 'SF-001',
                         d_company: 'a',
                         d_contact: 'b',
                         d_tel: '111',

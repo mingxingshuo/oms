@@ -4,6 +4,7 @@ const crypto = require("crypto");
 const xml2js = require("xml2js");
 const builder = new xml2js.Builder();
 const parser = new xml2js.Parser();
+const OrderModel = require('../model/Order');
 
 router.prefix('/order')
 
@@ -81,7 +82,17 @@ router.get('/create', async function (ctx, next) {
         }
     }
     let result = await req(url, data)
-    ctx.body = result
+    if(result.type == 2){
+        await OrderModel.create({
+            orderid, mailno, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
+            d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
+            pay_method, express_type, parcel_quantity, cargo_length, cargo_width, cargo_height, volume,
+            cargo_total_weight, sendstarttime, is_docall, need_return_tracking_no, return_tracking,
+            temp_range, template, remark, oneself_pickup_flg, special_delivery_type_code,
+            special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no
+        })
+    }
+    ctx.body = result.data
 })
 
 router.get('/findOne', async function (ctx, next) {
@@ -110,7 +121,7 @@ router.get('/findOne', async function (ctx, next) {
         }
     }
     let result = await req(url, data)
-    ctx.body = result
+    ctx.body = result.data
 })
 
 router.get('/confirm', async function (ctx, next) {
@@ -145,7 +156,7 @@ router.get('/confirm', async function (ctx, next) {
         }
     }
     let result = await req(url, data)
-    ctx.body = result
+    ctx.body = result.data
 })
 
 router.post('/OrderState', async function (ctx, next) {
@@ -160,6 +171,7 @@ router.post('/OrderState', async function (ctx, next) {
                 console.log(err, ' 订单状态返回错误');
             } else {
                 console.log(data, ' 订单状态返回成功');
+                await OrderModel.update({orderId:data.Request.orderNo},{orderStateCode:data.Request.orderStateCode})
             }
         });
     });
@@ -178,9 +190,9 @@ function req(url, data) {
         request.post(url, data, function (err, res, body) {
             parser.parseString(body, function (err1, result) {
                 if (result.Response.ERROR) {
-                    resolve(result.Response.ERROR[0])
+                    resolve({type: 1, data: result.Response.ERROR[0]})
                 } else {
-                    resolve(result.Response.Body[0].OrderResponse[0])
+                    resolve({type: 2, data: result.Response.Body[0].OrderResponse[0]})
                 }
             })
         })
