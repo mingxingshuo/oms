@@ -167,11 +167,12 @@ router.post('/OrderState', async function (ctx, next) {
     });
     ctx.req.on('end', function () {
         parser.parseString(buf, async function (err, data) {
+            console.log(data,'----------------------data')
             if (err) {
                 console.log(err, ' 订单状态返回错误');
             } else {
                 console.log(data, ' 订单状态返回成功');
-                await OrderModel.update({orderId:data.Request.orderNo},{orderStateCode:data.Request.orderStateCode})
+                // await OrderModel.update({orderId:data.Request.orderNo},{orderStateCode:data.Request.orderStateCode})
             }
         });
     });
