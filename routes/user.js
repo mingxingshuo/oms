@@ -9,7 +9,7 @@ router.prefix('/user');
 router.post('/login', async (ctx, next) => {
     let { username, password } = ctx.request.body;
     let result = await UserModel.findOne({username});
-    if(result._id && md5(md5(result.password + salt)) === password) {
+    if(result && result._id && md5(md5(result.password + salt)) === password) {
         result.loginAt = Date.now();
         await result.save();
         result = result.toObject();
@@ -23,12 +23,12 @@ router.post('/login', async (ctx, next) => {
 });
 
 router.post('/', async (ctx, next) => {
-    let { username, password, role, remarks, nickName } = ctx.request.body;
+    let { username, password, role, remarks, nickName, power } = ctx.request.body;
     let result = await UserModel.find({username});
     if(result.length > 0) {
         ctx.body = {code: 2, msg: "该账户名已存在，请检查输入是否有误"}
     } else {
-        let data = await UserModel.create({ username, nickName, password, role, remarks});
+        let data = await UserModel.create({ username, nickName, password, role, remarks, power});
         if(data) {
             ctx.body = {code: 1, msg: '账户创建成功', data}
         } else {
