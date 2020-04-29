@@ -83,7 +83,7 @@ router.get('/create', async function (ctx, next) {
     }
     let result = await req(url, data)
     if (result.type == 2) {
-        await OrderModel.create({
+        let body = await OrderModel.create({
             orderid, mailno, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
             d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
             pay_method, express_type, parcel_quantity, cargo_length, cargo_width, cargo_height, volume,
@@ -91,11 +91,31 @@ router.get('/create', async function (ctx, next) {
             temp_range, template, remark, oneself_pickup_flg, special_delivery_type_code,
             special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no
         })
+        if (body) {
+            ctx.body = {code: 1, msg: '订单创建成功', body}
+        } else {
+            ctx.response.status = 400;
+            ctx.body = {code: -1, msg: '订单创建失败，请重试'}
+        }
+    } else {
+        ctx.body = {code: -1, msg: '订单创建失败，请重试'}
     }
+
     ctx.body = result.data
 })
 
-router.get('/findOne', async function (ctx, next) {
+router.get('/find', async function (ctx, next) {
+    let {page} = ctx.request.query || 1
+    let orders = await OrderModel.find().skip((page - 1) * 10).limit(10)
+    if(orders.length > 0) {
+        ctx.body = {code: 1, msg: '查询成功', data:orders}
+    } else {
+        ctx.response.status = 400;
+        ctx.body = {code: -1, msg: '没有查询到相关数据'}
+    }
+})
+
+router.get('/OrderSearch', async function (ctx, next) {
     let {orderid, search_type} = ctx.request.query || ""
     let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
     let xml = {
@@ -121,7 +141,11 @@ router.get('/findOne', async function (ctx, next) {
         }
     }
     let result = await req(url, data)
-    ctx.body = result.data
+    if (result.type == 2) {
+        ctx.body = {code: 1, msg: '查询成功', data:result.data.$}
+    }else{
+        ctx.body = {code: -1, msg: result.data._}
+    }
 })
 
 router.get('/confirm', async function (ctx, next) {
@@ -156,11 +180,11 @@ router.get('/confirm', async function (ctx, next) {
         }
     }
     let result = await req(url, data)
-    ctx.body = result.data
+    ctx.body = {code: 1, msg: '确认或取消成功', data:result.data}
 })
 
 router.post('/OrderState', async function (ctx, next) {
-    console.log(ctx.request.body,'-------------------body')
+    // console.log(ctx.request.body, '-------------------body')
     var buf = "";
     ctx.req.setEncoding('utf8');
     ctx.req.on('data', function (chunk) {
@@ -168,12 +192,12 @@ router.post('/OrderState', async function (ctx, next) {
     });
     ctx.req.on('end', function () {
         parser.parseString(buf, async function (err, data) {
-            console.log(err, data, '----------------------data')
             if (err) {
                 console.log(err, ' 订单状态返回错误');
             } else {
                 console.log(data, ' 订单状态返回成功');
-                await OrderModel.update({orderId: data.Request.orderNo}, {orderStateCode: data.Request.orderStateCode[0]})
+                let result = data.Request
+                await OrderModel.update({orderid: result.orderNo[0]}, {orderStateCode: result.orderStateCode[0],orderStateDesc:result.orderStateDesc[0]})
             }
         });
     });

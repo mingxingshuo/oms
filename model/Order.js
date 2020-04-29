@@ -45,7 +45,8 @@ var OrderSchema = new Schema({
     routelabelForReturn: Number,
     routelabelService: Number,
     is_unified_waybill_no: Number,
-    orderStateCode: Number,
+    orderStateCode: String,
+    orderStateDesc: String,
     createAt: {
         type: Number,
         default: Date.now()
