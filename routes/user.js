@@ -3,7 +3,6 @@ const UserModel = require('../model/User.js');
 const md5 = require('../util/encryptByMD5');
 const salt = "QE4CwVWGy1lBBIW5uoYFsZEwfyI7ScuU";
 const routers = require('../conf/router');
-console.log(routers["0"])
 router.prefix('/user');
 
 router.post('/login', async (ctx, next) => {

@@ -3,18 +3,18 @@
     "0": [
         {
             "icon": "iconusers",
-            "keyIndex": "account",
+            "keyIndex": "user",
             "role": 0,
             "subMenuList": [
                 {
                     "keyIndex": "manage",
                     "title": "账户列表",
-                    "path": "/admin/account/manage"
+                    "path": "/admin/user/manage"
                 },
                 {
                     "keyIndex": "add",
                     "title": "新增用户",
-                    "path": "/admin/account/add"
+                    "path": "/admin/user/add"
                 }
             ],
             "title": "账户管理"
@@ -40,18 +40,18 @@
     "1": [
         {
             "icon": "user",
-            "keyIndex": "account",
+            "keyIndex": "user",
             "role": 0,
             "subMenuList": [
                 {
                     "keyIndex": "manage",
                     "title": "账户列表",
-                    "path": "/admin/account/manage"
+                    "path": "/admin/user/manage"
                 },
                 {
                     "keyIndex": "add",
                     "title": "新增用户",
-                    "path": "/admin/account/add"
+                    "path": "/admin/user/add"
                 }
             ],
             "title": "账户管理"
