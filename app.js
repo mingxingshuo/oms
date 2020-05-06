@@ -7,6 +7,7 @@ const bodyparser = require('koa-bodyparser');
 const logger = require('koa-logger');
 const userAgent = require('koa2-useragent');
 
+const index = require('./routes/index');
 const user = require('./routes/user');
 const order = require('./routes/order');
 
@@ -17,6 +18,7 @@ onerror(app);
 app.use(bodyparser());
 app.use(json());
 app.use(require('koa-static')(__dirname + '/public'), {maxAge: 1000 * 60 * 60})
+app.use(require('koa-static')(__dirname + '/build'), {maxAge: 1000 * 60 * 60})
 
 app.use(views(__dirname + '/views', {
     extension: 'ejs'
@@ -39,6 +41,7 @@ app.use(async(ctx, next) => {
 
 
 // routes
+app.use(index.routes(), index.allowedMethods());
 app.use(user.routes(), user.allowedMethods());
 app.use(order.routes(), order.allowedMethods());
 
