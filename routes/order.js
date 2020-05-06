@@ -12,7 +12,7 @@ var checkword = "QE4CwVWGy1lBBIW5uoYFsZEwfyI7ScuU"
 
 router.get('/create', async function (ctx, next) {
     let {
-        orderid, mailno, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
+        orderid, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
         d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
         pay_method, express_type, parcel_quantity, cargo_length, cargo_width, cargo_height, volume,
         cargo_total_weight, sendstarttime, is_docall, need_return_tracking_no, return_tracking,
@@ -28,7 +28,6 @@ router.get('/create', async function (ctx, next) {
                 Order: {
                     $: {
                         orderid: orderid,
-                        mailno: mailno,
                         j_company: j_company,
                         j_contact: j_contact,
                         j_tel: j_tel,
@@ -83,6 +82,7 @@ router.get('/create', async function (ctx, next) {
     }
     let result = await req(url, data)
     if (result.type == 2) {
+        let mailno = result['data']['$']['mailno']
         let body = await OrderModel.create({
             orderid, mailno, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
             d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
@@ -92,7 +92,7 @@ router.get('/create', async function (ctx, next) {
             special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no
         })
         if (body) {
-            ctx.body = {code: 1, msg: '订单创建成功', body}
+            ctx.body = {code: 1, msg: '订单创建成功'}
         } else {
             ctx.response.status = 400;
             ctx.body = {code: -1, msg: '订单创建失败，请重试'}
@@ -100,15 +100,13 @@ router.get('/create', async function (ctx, next) {
     } else {
         ctx.body = {code: -1, msg: '订单创建失败，请重试'}
     }
-
-    ctx.body = result.data
 })
 
 router.get('/find', async function (ctx, next) {
     let {page} = ctx.request.query || 1
     let orders = await OrderModel.find().skip((page - 1) * 10).limit(10)
-    if(orders.length > 0) {
-        ctx.body = {code: 1, msg: '查询成功', data:orders}
+    if (orders.length > 0) {
+        ctx.body = {code: 1, msg: '查询成功', data: orders}
     } else {
         ctx.response.status = 400;
         ctx.body = {code: -1, msg: '没有查询到相关数据'}
@@ -142,8 +140,8 @@ router.get('/OrderSearch', async function (ctx, next) {
     }
     let result = await req(url, data)
     if (result.type == 2) {
-        ctx.body = {code: 1, msg: '查询成功', data:result.data.$}
-    }else{
+        ctx.body = {code: 1, msg: '查询成功', data: result.data.$}
+    } else {
         ctx.body = {code: -1, msg: result.data._}
     }
 })
@@ -180,7 +178,7 @@ router.get('/confirm', async function (ctx, next) {
         }
     }
     let result = await req(url, data)
-    ctx.body = {code: 1, msg: '确认或取消成功', data:result.data}
+    ctx.body = {code: 1, msg: '确认或取消成功', data: result.data}
 })
 
 router.post('/OrderState', async function (ctx, next) {
@@ -197,7 +195,10 @@ router.post('/OrderState', async function (ctx, next) {
             } else {
                 console.log(data, ' 订单状态返回成功');
                 let result = data.Request
-                await OrderModel.update({orderid: result.orderNo[0]}, {orderStateCode: result.orderStateCode[0],orderStateDesc:result.orderStateDesc[0]})
+                await OrderModel.update({orderid: result.orderNo[0]}, {
+                    orderStateCode: result.orderStateCode[0],
+                    orderStateDesc: result.orderStateDesc[0]
+                })
             }
         });
     });
