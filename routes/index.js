@@ -1,17 +1,17 @@
 const router = require('koa-router')();
 
-const path = require('path');
+// const path = require('path');
 
 router.prefix('/');
 
-router.get('/admin/*', function(ctx, next) {
+router.get('/admin/*', async function(ctx, next) {
   console.log('...get /admin/* ...');
-  ctx.render('admin/index.ejs')
+  await ctx.render('admin/index.ejs')
 });
 
-router.get('/admin', function(ctx, next) {
+router.get('/admin', async function(ctx, next) {
   console.log('...get /admin ...');
-  ctx.render('admin/index.ejs')
+  await ctx.render('admin/index.ejs')
 });
 
 
