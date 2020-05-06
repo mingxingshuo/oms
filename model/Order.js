@@ -45,6 +45,7 @@ var OrderSchema = new Schema({
     routelabelForReturn: Number,
     routelabelService: Number,
     is_unified_waybill_no: Number,
+    dealtype: {type: Number, default: 0}, //0默认，1已确认 ,2已取消
     orderStateCode: String,
     orderStateDesc: String,
     createAt: {
