@@ -6,7 +6,7 @@ const parser = new xml2js.Parser();
 const OrderModel = require('../model/Order');
 
 async function a() {
-    let b = await OrderModel.findOne({orderid:'sf023'})
+    let b = await OrderModel.remove({orderid:'sf023'})
     console.log(b,'---------------------b')
 }
 a()
