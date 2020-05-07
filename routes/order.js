@@ -12,7 +12,7 @@ var checkword = "QE4CwVWGy1lBBIW5uoYFsZEwfyI7ScuU"
 
 router.get('/create', async function (ctx, next) {
     let {
-        orderid, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
+        account_id, orderid, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
         d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
         pay_method, express_type, parcel_quantity, cargo_length, cargo_width, cargo_height, volume,
         cargo_total_weight, sendstarttime, is_docall, need_return_tracking_no, return_tracking,
@@ -80,26 +80,27 @@ router.get('/create', async function (ctx, next) {
             verifyCode: str
         }
     }
-    let result = await req(url, data)
-    if (result.type == 2) {
-        let mailno = result['data']['$']['mailno']
-        let body = await OrderModel.create({
-            orderid, mailno, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
-            d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
-            pay_method, express_type, parcel_quantity, cargo_length, cargo_width, cargo_height, volume,
-            cargo_total_weight, sendstarttime, is_docall, need_return_tracking_no, return_tracking,
-            temp_range, template, remark, oneself_pickup_flg, special_delivery_type_code,
-            special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no
-        })
-        if (body) {
-            ctx.body = {code: 1, msg: '订单创建成功'}
-        } else {
-            ctx.response.status = 400;
-            ctx.body = {code: -1, msg: '订单创建失败，请重试'}
-        }
+    // let result = await req(url, data)
+    // if (result.type == 2) {
+    //     let mailno = result['data']['$']['mailno']
+    let mailno = ''
+    let body = await OrderModel.create({
+        orderid, mailno, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
+        d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
+        pay_method, express_type, parcel_quantity, cargo_length, cargo_width, cargo_height, volume,
+        cargo_total_weight, sendstarttime, is_docall, need_return_tracking_no, return_tracking,
+        temp_range, template, remark, oneself_pickup_flg, special_delivery_type_code,
+        special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no
+    })
+    if (body) {
+        ctx.body = {code: 1, msg: '订单创建成功'}
     } else {
+        ctx.response.status = 400;
         ctx.body = {code: -1, msg: '订单创建失败，请重试'}
     }
+    // } else {
+    //     ctx.body = {code: -1, msg: '订单创建失败，请重试'}
+    // }
 })
 
 router.get('/find', async function (ctx, next) {

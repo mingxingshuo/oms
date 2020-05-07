@@ -4,6 +4,7 @@ var connect_url = require('../conf/proj.json').mongodb;
 var db = mongoose.createConnection(connect_url);
 
 var OrderSchema = new Schema({
+    account_id: String,
     orderid: String,
     mailno: String,
     j_company: String,
