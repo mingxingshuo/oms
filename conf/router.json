@@ -51,7 +51,7 @@
                 },
                 {
                     "keyIndex": "create",
-                    "title": "新增订单",
+                    "title": "创建订单",
                     "path": "/admin/order/create"
                 }
             ]
@@ -70,7 +70,7 @@
                 },
                 {
                     "keyIndex": "create",
-                    "title": "新增订单",
+                    "title": "创建订单",
                     "path": "/admin/order/create"
                 }
             ]
