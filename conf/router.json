@@ -18,23 +18,6 @@
                 }
             ],
             "title": "账户管理"
-        },
-        {
-            "keyIndex": "order",
-            "title": "订单管理",
-            "icon": "iconorder",
-            "subMenuList": [
-                {
-                    "keyIndex": "list",
-                    "title": "订单列表",
-                    "path": "/admin/order/list"
-                },
-                {
-                    "keyIndex": "create",
-                    "title": "新增订单",
-                    "path": "/admin/order/create"
-                }
-            ]
         }
     ],
     "1": [
