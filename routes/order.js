@@ -104,7 +104,7 @@ router.get('/create', async function (ctx, next) {
 })
 
 router.get('/find', async function (ctx, next) {
-    let {page, account_id} = ctx.request.query || 1
+    let {account_id, page = 1} = ctx.request.query;
     let orders = await OrderModel.find({account_id: account_id}).skip((page - 1) * 10).limit(10)
     if (orders.length > 0) {
         ctx.body = {code: 1, msg: '查询成功', data: orders}
