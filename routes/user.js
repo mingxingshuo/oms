@@ -38,14 +38,16 @@ router.post('/', async (ctx, next) => {
 });
 
 router.get('/', async (ctx, next) => {
-    let { username } = ctx.query, result;
+    let { username, page } = ctx.query, result, total;
     if(username) {
-        result = await UserModel.find({username: {$regex: new RegExp(username)}})
+        result = await UserModel.find({username: {$regex: new RegExp(username)}}).skip((page - 1) * 10).limit(10);
+        total = await UserModel.count({username: {$regex: new RegExp(username)}});
     } else {
-        result = await UserModel.find();
+        result = await UserModel.find().skip((page - 1) * 10).limit(10);
+        total = await UserModel.count();
     }
     if(result.length > 0) {
-        ctx.body = {code: 1, msg: '查询成功', data: result}
+        ctx.body = {code: 1, msg: '查询成功', data: result, total}
     } else {
         ctx.response.status = 404;
         ctx.body = {code: -1, msg: '没有查询到相关数据'}
