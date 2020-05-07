@@ -22,7 +22,7 @@
     ],
     "1": [
         {
-            "icon": "user",
+            "icon": "iconusers",
             "keyIndex": "user",
             "role": 0,
             "subMenuList": [
@@ -42,7 +42,7 @@
         {
             "keyIndex": "order",
             "title": "订单管理",
-            "icon": "windows",
+            "icon": "iconorder",
             "subMenuList": [
                 {
                     "keyIndex": "list",
@@ -61,7 +61,7 @@
         {
             "keyIndex": "order",
             "title": "订单管理",
-            "icon": "windows",
+            "icon": "iconorder",
             "subMenuList": [
                 {
                     "keyIndex": "list",

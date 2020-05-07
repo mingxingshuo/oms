@@ -1,34 +1,48 @@
 const router = require('koa-router')();
 
-// const path = require('path');
+const path = require('path');
+const fs = require('fs');
 
 router.prefix('/');
 
+// router.get('/admin/*', async function(ctx, next) {
+//   console.log('...get /admin/* ...');
+//   await ctx.render('admin/index.ejs')
+// });
+//
+// router.get('/admin', async function(ctx, next) {
+//   console.log('...get /admin ...');
+//   await ctx.render('admin/index.ejs')
+// });
+
+router.get('/', async function(ctx, next) {
+    const htmlFile = await readHtmlFile(path.join(__dirname, '../public', 'index.html'));
+    ctx.type = 'html';
+    ctx.body = htmlFile;
+});
+
 router.get('/admin/*', async function(ctx, next) {
-  console.log('...get /admin/* ...');
-  await ctx.render('admin/index.ejs')
+    const htmlFile = await readHtmlFile(path.join(__dirname, '../build', 'index.html'));
+    ctx.type = 'html';
+    ctx.body = htmlFile;
 });
 
 router.get('/admin', async function(ctx, next) {
-  console.log('...get /admin ...');
-  await ctx.render('admin/index.ejs')
+    const htmlFile = await readHtmlFile(path.join(__dirname, '../build', 'index.html'));
+    ctx.type = 'html';
+    ctx.body = htmlFile;
 });
 
-
-//
-// router.get('/', function(req, res, next) {
-//   console.log('...get / ...');
-//   res.sendFile(path.join(__dirname, '../public', 'index.html'));
-// });
-
-// router.get('/admin/*', function(req, res, next) {
-//   console.log('...get /admin/* ...');
-//   res.sendFile(path.join(__dirname, '../build', 'home.html'));
-// });
-//
-// router.get('/admin', function(req, res, next) {
-//   console.log('...get /admin ...');
-//   res.sendFile(path.join(__dirname, '../build', 'home.html'));
-// });
+function readHtmlFile(filePath) {
+    return new Promise(function(resolve, reject){
+        fs.readFile(path.join(filePath), (err, data) => {
+            if (err){
+                reject(err);
+            }else{
+                resolve(data);
+            }
+        });
+    })
+}
 
 module.exports = router;
