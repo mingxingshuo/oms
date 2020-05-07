@@ -47,7 +47,6 @@ router.get('/', async (ctx, next) => {
     if(result.length > 0) {
         ctx.body = {code: 1, msg: '查询成功', data: result}
     } else {
-        ctx.response.status = 400;
         ctx.body = {code: -1, msg: '没有查询到相关数据'}
     }
 });

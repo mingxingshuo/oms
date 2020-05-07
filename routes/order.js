@@ -109,7 +109,6 @@ router.get('/find', async function (ctx, next) {
     if (orders.length > 0) {
         ctx.body = {code: 1, msg: '查询成功', data: orders}
     } else {
-        ctx.response.status = 400;
         ctx.body = {code: -1, msg: '没有查询到相关数据'}
     }
 })
