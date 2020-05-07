@@ -85,7 +85,7 @@ router.get('/create', async function (ctx, next) {
     //     let mailno = result['data']['$']['mailno']
     let mailno = ''
     let body = await OrderModel.create({
-        orderid, mailno, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
+        account_id, orderid, mailno, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
         d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
         pay_method, express_type, parcel_quantity, cargo_length, cargo_width, cargo_height, volume,
         cargo_total_weight, sendstarttime, is_docall, need_return_tracking_no, return_tracking,
@@ -104,8 +104,8 @@ router.get('/create', async function (ctx, next) {
 })
 
 router.get('/find', async function (ctx, next) {
-    let {page} = ctx.request.query || 1
-    let orders = await OrderModel.find().skip((page - 1) * 10).limit(10)
+    let {page, account_id} = ctx.request.query || 1
+    let orders = await OrderModel.find({account_id: account_id}).skip((page - 1) * 10).limit(10)
     if (orders.length > 0) {
         ctx.body = {code: 1, msg: '查询成功', data: orders}
     } else {
