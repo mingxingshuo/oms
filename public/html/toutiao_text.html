@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: 37.5px">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+    <title>跳转微信测试</title>
+</head>
+<body>
+<div class="container">
+    <a href="weixin://dl">所有</a>
+    <hr /><a href="weixin://dl/officialaccounts">朋友圈</a>
+    <hr /><a href="weixin://dl/recommendation">新的朋友</a>
+    <hr /><a href="weixin://dl/add?ticket=t12a18b2b6ac3ca603bfae46bd17b58f1 ">添加朋友</a>
+    <hr /><a href="weixin://dl/business?ticket=t12a18b2b6ac3ca603bfae46bd17b58f1 ">business</a>
+    <hr /><a href="weixin://dl/scan">扫一扫1</a>
+    <hr /><a href="weixin://scanqrcode">扫一扫2</a>
+    <hr /><a href="weixin://dl/shopping">购物</a>
+    <hr /><a href="weixin://dl/games">游戏</a>
+    <hr /><a href="weixin://dl/groups">群聊</a>
+    <hr /><a href="weixin://dl/tags">标签</a>
+    <hr /><a href="weixin://dl/moments">朋友圈</a>
+    <hr /><a href="weixin://dl/log">日志</a>
+</div>
+</body>
+<script>
+    function all() {
+        window.location.replace('weixin://dl');
+    }
+
+    function officialaccounts() {
+        window.location.replace('weixin://dl/officialaccounts');
+    }
+
+    function addFriends() {
+        window.location.replace('weixin://dl/add');
+    }
+
+    function newFriends() {
+        window.location.replace('weixin://dl/recommendation');
+    }
+
+    function saoyisao1() {
+        window.location.replace('weixin://dl/scan');
+    }
+
+    function saoyisao2() {
+        window.location.replace('weixin://scanqrcode ');
+    }
+
+    function shopping() {
+        window.location.replace('weixin://dl/shopping ');
+    }
+
+    function games() {
+        window.location.replace('weixin://dl/games');
+    }
+
+    function groups() {
+        window.location.replace('weixin://dl/groups');
+    }
+
+    function tags() {
+        window.location.replace('weixin://dl/tags');
+    }
+
+    function moments() {
+        window.location.replace('weixin://dl/moments');
+    }
+
+    function log() {
+        window.location.replace('weixin://dl/log');
+    }
+
+</script>
+</html>
