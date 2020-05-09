@@ -9,6 +9,7 @@
 <body>
 <div class="container">
     <a onclick="all">所有</a>
+    <hr /><a onclick="officialaccounts">朋友圈</a>
     <hr /><a onclick="newFriends">新的朋友</a>
     <hr /><a onclick="addFriends">添加朋友</a>
     <hr /><a onclick="saoyisao1">扫一扫1</a>
@@ -24,6 +25,10 @@
 <script>
     function all() {
         window.location.replace('weixin://dl');
+    }
+
+    function officialaccounts() {
+        window.location.replace('weixin://dl/officialaccounts');
     }
 
     function addFriends() {
