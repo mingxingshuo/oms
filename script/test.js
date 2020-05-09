@@ -6,10 +6,10 @@ const parser = new xml2js.Parser();
 const OrderModel = require('../model/Order');
 
 async function a() {
-    let b = await OrderModel.find({})
+    let b = await OrderModel.find()
     console.log(b,'---------------------b')
 }
-a()
+// a()
 // function md5(str) {
 //     let md5 = crypto.createHash('md5');
 //     md5.update(str, "utf8");
@@ -29,13 +29,6 @@ async function test() {
                 Order: {
                     $: {
                         orderid: 'SF-001'
-                    },
-                    AddedService: {
-                        $: {
-                            name: 1,
-                            value: 1,
-                            value1: 1
-                        }
                     }
                 }
             }
@@ -47,9 +40,12 @@ async function test() {
     for(let i of Cargo){
         arr.push({$:i})
     }
+    let AddedService = {a:1,b:2}
     xml['Request']['Body']['Order']['Cargo'] = arr
+    xml['Request']['Body']['Order']['AddedService'] = {}
+    xml['Request']['Body']['Order']['AddedService']['$'] = AddedService
     console.log(JSON.stringify(xml), '-------------------------json')
     xml = builder.buildObject(xml)
     console.log(xml, '-------------------------data')
 }
-// test()
+test()

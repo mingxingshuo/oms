@@ -10,7 +10,7 @@ router.prefix('/order')
 
 var checkword = "QE4CwVWGy1lBBIW5uoYFsZEwfyI7ScuU"
 
-router.get('/create', async function (ctx, next) {
+router.post('/create', async function (ctx, next) {
     let {
         account_id, orderid, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
         d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
@@ -18,8 +18,8 @@ router.get('/create', async function (ctx, next) {
         cargo_total_weight, sendstarttime, is_docall, need_return_tracking_no, return_tracking,
         temp_range, template, remark, oneself_pickup_flg, special_delivery_type_code,
         special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no
-    } = ctx.request.query || ""
-    let {isCargo = false, Cargo = [], AddedService = {}} = ctx.request.query
+    } = ctx.request.body || ""
+    let {Cargo = [], isAdded = false, AddedService = {}} = ctx.request.body
     let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
     let xml = {
         Request: {
@@ -68,24 +68,20 @@ router.get('/create', async function (ctx, next) {
                         routelabelForReturn: routelabelForReturn,
                         routelabelService: routelabelService,
                         is_unified_waybill_no: is_unified_waybill_no
-                    },
-                    AddedService: {
-                        $: {
-                            name: AddedService['name'],
-                            value: AddedService['value'],
-                            value1: AddedService['value1']
-                        }
                     }
                 }
             }
         }
     }
-    if (isCargo) {
-        let arr = []
-        for(let item of Cargo){
-            arr.push({$:item})
-        }
-        xml['Request']['Body']['Order']['Cargo'] = arr
+    let arr = []
+    for (let item of Cargo) {
+        arr.push({$: item})
+    }
+    xml['Request']['Body']['Order']['Cargo'] = arr
+
+    if (isAdded) {
+        xml['Request']['Body']['Order']['AddedService'] = {}
+        xml['Request']['Body']['Order']['AddedService']['$'] = AddedService
     }
     console.log(JSON.stringify(xml), '-----------------------json')
     xml = builder.buildObject(xml)
