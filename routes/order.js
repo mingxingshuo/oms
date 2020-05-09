@@ -19,6 +19,7 @@ router.get('/create', async function (ctx, next) {
         temp_range, template, remark, oneself_pickup_flg, special_delivery_type_code,
         special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no
     } = ctx.request.query || ""
+    let {isCargo = false, Cargo = [], AddedService = {}} = ctx.request.query
     let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
     let xml = {
         Request: {
@@ -67,12 +68,28 @@ router.get('/create', async function (ctx, next) {
                         routelabelForReturn: routelabelForReturn,
                         routelabelService: routelabelService,
                         is_unified_waybill_no: is_unified_waybill_no
+                    },
+                    AddedService: {
+                        $: {
+                            name: AddedService['name'],
+                            value: AddedService['value'],
+                            value1: AddedService['value1']
+                        }
                     }
                 }
             }
         }
     }
+    if (isCargo) {
+        let arr = []
+        for(let item of Cargo){
+            arr.push({$:item})
+        }
+        xml['Request']['Body']['Order']['Cargo'] = arr
+    }
+    console.log(JSON.stringify(xml), '-----------------------json')
     xml = builder.buildObject(xml)
+    console.log(xml, '-----------------------xml')
     let str = md5(xml + checkword)
     let data = {
         form: {
@@ -80,27 +97,28 @@ router.get('/create', async function (ctx, next) {
             verifyCode: str
         }
     }
-    let result = await req(url, data)
-    if (result.type == 2) {
-        let mailno = result['data']['$']['mailno']
-        // let mailno = ''
-        let body = await OrderModel.create({
-            account_id, orderid, mailno, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
-            d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
-            pay_method, express_type, parcel_quantity, cargo_length, cargo_width, cargo_height, volume,
-            cargo_total_weight, sendstarttime, is_docall, need_return_tracking_no, return_tracking,
-            temp_range, template, remark, oneself_pickup_flg, special_delivery_type_code,
-            special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no
-        })
-        if (body) {
-            ctx.body = {code: 1, msg: '订单创建成功'}
-        } else {
-            ctx.response.status = 400;
-            ctx.body = {code: -1, msg: '订单创建失败，请重试'}
-        }
+    // let result = await req(url, data)
+    // if (result.type == 2) {
+    //     let mailno = result['data']['$']['mailno']
+    let mailno = ''
+    let body = await OrderModel.create({
+        account_id, orderid, mailno, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
+        d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
+        pay_method, express_type, parcel_quantity, cargo_length, cargo_width, cargo_height, volume,
+        cargo_total_weight, sendstarttime, is_docall, need_return_tracking_no, return_tracking,
+        temp_range, template, remark, oneself_pickup_flg, special_delivery_type_code,
+        special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no,
+        isCargo, Cargo, AddedService
+    })
+    if (body) {
+        ctx.body = {code: 1, msg: '订单创建成功'}
     } else {
+        ctx.response.status = 400;
         ctx.body = {code: -1, msg: '订单创建失败，请重试'}
     }
+    // } else {
+    //     ctx.body = {code: -1, msg: '订单创建失败，请重试'}
+    // }
 })
 
 router.get('/find', async function (ctx, next) {

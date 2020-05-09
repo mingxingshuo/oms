@@ -49,6 +49,13 @@ var OrderSchema = new Schema({
     dealtype: {type: Number, default: 0}, //0默认，1已确认 ,2已取消
     orderStateCode: String,
     orderStateDesc: String,
+    isCargo: {type: Boolean, default: false},
+    Cargo: Array,
+    AddedService: {
+        name: String,
+        value: String,
+        value1: String
+    },
     createAt: {
         type: Number,
         default: Date.now()

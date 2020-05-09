@@ -6,7 +6,7 @@ const parser = new xml2js.Parser();
 const OrderModel = require('../model/Order');
 
 async function a() {
-    let b = await OrderModel.remove()
+    let b = await OrderModel.find({})
     console.log(b,'---------------------b')
 }
 a()
@@ -19,39 +19,37 @@ a()
 //
 // var checkword = "QE4CwVWGy1lBBIW5uoYFsZEwfyI7ScuU"
 //
-// async function test() {
-//     let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
-//     let xml = {
-//         Request: {
-//             $: {service: 'OrderService', lang: 'zh-CN'},
-//             Head: 'MXSBJKJ',
-//             Body: {
-//                 Order: {
-//                     $: {
-//                         orderid: 'SF-001',
-//                         j_tel: '111',
-//                         j_address: '南京市',
-//                         d_company: 'a',
-//                         d_contact: 'b',
-//                         d_tel: '111',
-//                         d_address: '南京市',
-//                         cargo: 'iphone 7 plus'
-//                     }
-//                 }
-//             }
-//         }
-//     }
-//     xml = builder.buildObject(xml)
-//     console.log(xml, '-------------------------data')
-//     let str = md5(xml + checkword)
-//     let data = {
-//         form: {
-//             xml: xml,
-//             verifyCode: str
-//         }
-//     }
-//     request.post(url, data, function (err, res, body) {
-//         console.log(body,'--------body')
-//     })
-// }
+async function test() {
+    let Cargo = [{name: 1, count: 1}, {name: 2, count: 2}, {name: 3, count: 3}]
+    let xml = {
+        Request: {
+            $: {service: 'OrderService', lang: 'zh-CN'},
+            Head: 'MXSBJKJ',
+            Body: {
+                Order: {
+                    $: {
+                        orderid: 'SF-001'
+                    },
+                    AddedService: {
+                        $: {
+                            name: 1,
+                            value: 1,
+                            value1: 1
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // xml['Request']['Body']['Order']['Cargo'] = {}
+    // xml['Request']['Body']['Order']['Cargo']['$'] = {}
+    let arr = []
+    for(let i of Cargo){
+        arr.push({$:i})
+    }
+    xml['Request']['Body']['Order']['Cargo'] = arr
+    console.log(JSON.stringify(xml), '-------------------------json')
+    xml = builder.buildObject(xml)
+    console.log(xml, '-------------------------data')
+}
 // test()
