@@ -104,7 +104,7 @@ router.post('/create', async function (ctx, next) {
         cargo_total_weight, sendstarttime, is_docall, need_return_tracking_no, return_tracking,
         temp_range, template, remark, oneself_pickup_flg, special_delivery_type_code,
         special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no,
-        isCargo, Cargo, AddedService
+        isAdded, Cargo, AddedService
     })
     if (body) {
         ctx.body = {code: 1, msg: '订单创建成功'}
