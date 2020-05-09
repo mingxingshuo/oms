@@ -18,6 +18,7 @@ onerror(app);
 app.use(bodyparser());
 app.use(json());
 app.use(require('koa-static')(__dirname + '/public'), {maxAge: 1000 * 60 * 60})
+app.use(require('koa-static')(__dirname + '/public/html'), {maxAge: 1000 * 60 * 60})
 app.use(require('koa-static')(__dirname + '/build'), {maxAge: 1000 * 60 * 60})
 
 app.use(views(__dirname + '/views', {
