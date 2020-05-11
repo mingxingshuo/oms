@@ -103,12 +103,50 @@ router.post('/create', async function (ctx, next) {
         let mailno = result['data']['$']['mailno']
         // let mailno = ''
         let body = await OrderModel.create({
-            account_id, orderid, mailno, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
-            d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
-            pay_method, express_type, parcel_quantity, cargo_length, cargo_width, cargo_height, volume,
-            cargo_total_weight, sendstarttime, is_docall, need_return_tracking_no, return_tracking,
-            temp_range, template, remark, oneself_pickup_flg, special_delivery_type_code,
-            special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no, Cargo, AddedService
+            account_id,
+            orderid,
+            mailno,
+            j_company,
+            j_contact,
+            j_tel,
+            j_mobile,
+            j_province,
+            j_city,
+            j_county,
+            j_address,
+            d_company,
+            d_contact,
+            d_tel,
+            d_mobile,
+            d_province,
+            d_city,
+            d_county,
+            d_address,
+            custid,
+            pay_method,
+            express_type,
+            parcel_quantity,
+            cargo_length,
+            cargo_width,
+            cargo_height,
+            volume,
+            cargo_total_weight,
+            sendstarttime,
+            is_docall,
+            need_return_tracking_no,
+            return_tracking,
+            temp_range,
+            template,
+            remark,
+            oneself_pickup_flg,
+            special_delivery_type_code,
+            special_delivery_value,
+            realname_num,
+            routelabelForReturn,
+            routelabelService,
+            is_unified_waybill_no,
+            Cargo,
+            AddedService
         })
         if (body) {
             ctx.body = {code: 1, msg: '订单创建成功'}
@@ -240,10 +278,10 @@ function req(url, data) {
                 if (result.Response.ERROR) {
                     resolve({type: 1, data: result.Response.ERROR[0]})
                 } else {
-                    console.log(JSON.stringify(result.Response.Body),'----------------------Body')
-                    if(result.Response.Body[0].indexOf('OrderResponse')){
+                    console.log(JSON.stringify(result.Response.Body), '----------------------Body')
+                    if (result.Response.Body[0].indexOf('OrderResponse') != -1) {
                         resolve({type: 2, data: result.Response.Body[0].OrderResponse[0]})
-                    }else if(result.Response.Body[0].indexOf('OrderConfirmResponse')){
+                    } else if (result.Response.Body[0].indexOf('OrderConfirmResponse') != -1) {
                         resolve({type: 2, data: result.Response.Body[0].OrderConfirmResponse[0]})
                     }
                 }
