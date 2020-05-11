@@ -19,7 +19,7 @@ router.post('/create', async function (ctx, next) {
         temp_range, template, remark, oneself_pickup_flg, special_delivery_type_code,
         special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no
     } = ctx.request.body || ""
-    let {Cargo = [], isAdded = false, AddedService = []} = ctx.request.body
+    let {Cargo = [], AddedService = []} = ctx.request.body
     let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
     let xml = {
         Request: {
@@ -79,10 +79,10 @@ router.post('/create', async function (ctx, next) {
     }
     xml['Request']['Body']['Order']['Cargo'] = cargos
 
-    if (isAdded) {
+    if (AddedService.length > 0) {
         let addeds = []
-        for(let j of AddedService){
-            addeds.push({$:j})
+        for (let j of AddedService) {
+            addeds.push({$: j})
         }
         xml['Request']['Body']['Order']['AddedService'] = {}
         xml['Request']['Body']['Order']['AddedService'] = addeds
@@ -98,7 +98,7 @@ router.post('/create', async function (ctx, next) {
         }
     }
     let result = await req(url, data)
-    console.log(result,'-------------------------result')
+    console.log(result, '-------------------------result')
     if (result.type == 2) {
         let mailno = result['data']['$']['mailno']
         // let mailno = ''
