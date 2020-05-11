@@ -117,7 +117,7 @@ router.post('/create', async function (ctx, next) {
             ctx.body = {code: -1, msg: '订单创建失败，请重试'}
         }
     } else {
-        ctx.body = {code: -1, msg: '订单创建失败，请重试'}
+        ctx.body = {code: -1, msg: result.data._}
     }
 })
 
