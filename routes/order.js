@@ -98,7 +98,7 @@ router.post('/create', async function (ctx, next) {
         }
     }
     let result = await req(url, data)
-    console.log(result, '-------------------------result')
+    console.log(JSON.stringify(result), '-------------------------result')
     if (result.type == 2) {
         let mailno = result['data']['$']['mailno']
         // let mailno = ''
