@@ -238,8 +238,10 @@ function req(url, data) {
         request.post(url, data, function (err, res, body) {
             parser.parseString(body, function (err1, result) {
                 if (result.Response.ERROR) {
+                    console.log(result.Response.ERROR,'----------------------ERROR')
                     resolve({type: 1, data: result.Response.ERROR[0]})
                 } else {
+                    console.log(result.Response.Body,'----------------------Body')
                     resolve({type: 2, data: result.Response.Body[0].OrderResponse[0]})
                 }
             })
