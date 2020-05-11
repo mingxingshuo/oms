@@ -19,7 +19,7 @@ router.post('/create', async function (ctx, next) {
         temp_range, template, remark, oneself_pickup_flg, special_delivery_type_code,
         special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no
     } = ctx.request.body || ""
-    let {Cargo = [], isAdded = false, AddedService = {}} = ctx.request.body
+    let {Cargo = [], isAdded = false, AddedService = []} = ctx.request.body
     let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
     let xml = {
         Request: {
@@ -73,15 +73,19 @@ router.post('/create', async function (ctx, next) {
             }
         }
     }
-    let arr = []
-    for (let item of Cargo) {
-        arr.push({$: item})
+    let cargos = []
+    for (let i of Cargo) {
+        cargos.push({$: i})
     }
-    xml['Request']['Body']['Order']['Cargo'] = arr
+    xml['Request']['Body']['Order']['Cargo'] = cargos
 
     if (isAdded) {
+        let addeds = []
+        for(let j of AddedService){
+            addeds.push({$:j})
+        }
         xml['Request']['Body']['Order']['AddedService'] = {}
-        xml['Request']['Body']['Order']['AddedService']['$'] = AddedService
+        xml['Request']['Body']['Order']['AddedService'] = addeds
     }
     console.log(JSON.stringify(xml), '-----------------------json')
     xml = builder.buildObject(xml)

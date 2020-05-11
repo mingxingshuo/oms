@@ -51,11 +51,7 @@ var OrderSchema = new Schema({
     orderStateDesc: String,
     isAdded: {type: Boolean, default: false},
     Cargo: Array,
-    AddedService: {
-        name: String,
-        value: String,
-        value1: String
-    },
+    AddedService: Array,
     createAt: {
         type: Number,
         default: Date.now()

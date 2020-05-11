@@ -40,10 +40,14 @@ async function test() {
     for(let i of Cargo){
         arr.push({$:i})
     }
-    let AddedService = {a:1,b:2}
+    let AddedService = []
     xml['Request']['Body']['Order']['Cargo'] = arr
+    let arr1 = []
+    for(let j of AddedService){
+        arr1.push({$:j})
+    }
     xml['Request']['Body']['Order']['AddedService'] = {}
-    xml['Request']['Body']['Order']['AddedService']['$'] = AddedService
+    xml['Request']['Body']['Order']['AddedService'] = arr1
     console.log(JSON.stringify(xml), '-------------------------json')
     xml = builder.buildObject(xml)
     console.log(xml, '-------------------------data')
