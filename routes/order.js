@@ -279,9 +279,9 @@ function req(url, data) {
                     resolve({type: 1, data: result.Response.ERROR[0]})
                 } else {
                     console.log(JSON.stringify(result.Response.Body), '----------------------Body')
-                    if ((result.Response.Body[0]).indexOf('OrderResponse') != -1) {
+                    if (JSON.stringify(result.Response.Body[0]).indexOf('OrderResponse') != -1) {
                         resolve({type: 2, data: result.Response.Body[0].OrderResponse[0]})
-                    } else if ((result.Response.Body[0]).indexOf('OrderConfirmResponse') != -1) {
+                    } else if (JSON.stringify(result.Response.Body[0]).indexOf('OrderConfirmResponse') != -1) {
                         resolve({type: 2, data: result.Response.Body[0].OrderConfirmResponse[0]})
                     }
                 }
