@@ -282,7 +282,12 @@ router.get('/route', async function (ctx, next) {
         }
     }
     let result = await req(url, data)
-    ctx.body = {code: 1, msg: '查询路由成功', data: result.data}
+    if (result.type == 2) {
+        ctx.body = {code: 1, msg: '查询成功', data: result.data}
+    } else {
+        console.log('--------------2222')
+        ctx.body = {code: -1, msg: result.data}
+    }
 })
 
 router.post('/OrderState', async function (ctx, next) {
@@ -329,7 +334,13 @@ function req(url, data) {
                     } else if (JSON.stringify(result.Response.Body[0]).indexOf('OrderConfirmResponse') != -1) {
                         resolve({type: 2, data: result.Response.Body[0].OrderConfirmResponse[0]})
                     } else if (JSON.stringify(result.Response.Body[0]).indexOf('RouteResponse') != -1) {
-                        resolve({type: 2, data: result.Response.Body[0].RouteResponse[0].Route[0].$})
+                        if(result.Response.Body[0] && result.Response.Body[0].RouteResponse && result.Response.Body[0].RouteResponse[0].Route){
+                            resolve({type: 2, data: result.Response.Body[0].RouteResponse[0].Route[0].$})
+                        }else{
+                            resolve({type: 1, data: "没有查询到该订单的信息"})
+                        }
+                    }else{
+                        resolve({type: 1, data: "错误"})
                     }
                 }
             })
