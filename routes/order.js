@@ -253,6 +253,38 @@ router.get('/confirm', async function (ctx, next) {
     ctx.body = {code: 1, msg: '确认或取消成功', data: result.data}
 })
 
+router.get('/route', async function (ctx, next) {
+    let {tracking_type, tracking_number, method_type, reference_number, check_phoneNo} = ctx.request.query || ""
+    let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
+    let xml = {
+        Request: {
+            $: {service: 'RouteService', lang: 'zh-CN'},
+            Head: 'MXSBJKJ',
+            Body: {
+                RouteRequest: {
+                    $: {
+                        tracking_type: tracking_type,
+                        tracking_number: tracking_number,
+                        method_type: method_type,
+                        reference_number: reference_number,
+                        check_phoneNo: check_phoneNo
+                    }
+                }
+            }
+        }
+    }
+    xml = builder.buildObject(xml)
+    let str = md5(xml + checkword)
+    let data = {
+        form: {
+            xml: xml,
+            verifyCode: str
+        }
+    }
+    let result = await req(url, data)
+    ctx.body = {code: 1, msg: '查询路由成功', data: result.data}
+})
+
 router.post('/OrderState', async function (ctx, next) {
     // console.log(ctx.request.body, '-------------------body')
     var buf = "";
@@ -296,6 +328,8 @@ function req(url, data) {
                         resolve({type: 2, data: result.Response.Body[0].OrderResponse[0]})
                     } else if (JSON.stringify(result.Response.Body[0]).indexOf('OrderConfirmResponse') != -1) {
                         resolve({type: 2, data: result.Response.Body[0].OrderConfirmResponse[0]})
+                    } else if (JSON.stringify(result.Response.Body[0]).indexOf('RouteResponse') != -1) {
+                        resolve({type: 2, data: result.Response.Body[0].RouteResponse[0].Route[0].$})
                     }
                 }
             })
