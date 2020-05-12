@@ -6,10 +6,10 @@ const parser = new xml2js.Parser();
 const OrderModel = require('../model/Order');
 
 async function a() {
-    let b = await OrderModel.remove({})
+    let b = await OrderModel.find({})
     console.log(b,'---------------------b')
 }
-// a()
+a()
 // function md5(str) {
 //     let md5 = crypto.createHash('md5');
 //     md5.update(str, "utf8");
@@ -52,4 +52,4 @@ async function test() {
     xml = builder.buildObject(xml)
     console.log(xml, '-------------------------data')
 }
-test()
+// test()

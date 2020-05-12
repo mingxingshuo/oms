@@ -15,7 +15,7 @@ router.post('/create', async function (ctx, next) {
         account_id, orderid, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
         d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
         pay_method, express_type, parcel_quantity, cargo_length, cargo_width, cargo_height, volume,
-        cargo_total_weight, sendstarttime, is_docall, need_return_tracking_no, return_tracking,
+        cargo_total_weight, sendstarttime, is_docall='1', need_return_tracking_no, return_tracking,
         temp_range, template, remark, oneself_pickup_flg, special_delivery_type_code,
         special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no
     } = ctx.request.body || ""
@@ -165,6 +165,17 @@ router.get('/find', async function (ctx, next) {
     let count = await OrderModel.count({account_id: account_id})
     if (orders.length > 0) {
         ctx.body = {code: 1, msg: '查询成功', data: orders, count: count}
+    } else {
+        ctx.response.status = 404;
+        ctx.body = {code: -1, msg: '没有查询到相关数据'}
+    }
+})
+
+router.get('/findOne', async function (ctx, next) {
+    let {orderid} = ctx.request.query;
+    let order = await OrderModel.find({orderid: orderid})
+    if (order.length > 0) {
+        ctx.body = {code: 1, msg: '查询成功', data: order}
     } else {
         ctx.response.status = 404;
         ctx.body = {code: -1, msg: '没有查询到相关数据'}
