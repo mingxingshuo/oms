@@ -15,7 +15,7 @@ router.post('/create', async function (ctx, next) {
         account_id, orderid, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
         d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
         pay_method, express_type, parcel_quantity, cargo_length, cargo_width, cargo_height, volume,
-        cargo_total_weight, sendstarttime, is_docall='1', need_return_tracking_no, return_tracking,
+        cargo_total_weight, sendstarttime, is_docall = 1, need_return_tracking_no, return_tracking,
         temp_range, template, remark, oneself_pickup_flg, special_delivery_type_code,
         special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no
     } = ctx.request.body || ""
