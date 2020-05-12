@@ -285,7 +285,6 @@ router.get('/route', async function (ctx, next) {
     if (result.type == 2) {
         ctx.body = {code: 1, msg: '查询成功', data: result.data}
     } else {
-        console.log('--------------2222')
         ctx.body = {code: -1, msg: result.data}
     }
 })
@@ -337,7 +336,7 @@ function req(url, data) {
                         if(result.Response.Body[0] && result.Response.Body[0].RouteResponse && result.Response.Body[0].RouteResponse[0].Route){
                             resolve({type: 2, data: result.Response.Body[0].RouteResponse[0].Route[0].$})
                         }else{
-                            resolve({type: 1, data: "没有查询到该订单的信息"})
+                            resolve({type: 1, data: "没有查询到该订单的物流信息"})
                         }
                     }else{
                         resolve({type: 1, data: "请求错误"})
