@@ -146,7 +146,9 @@ router.post('/create', async function (ctx, next) {
             routelabelService,
             is_unified_waybill_no,
             Cargo,
-            AddedService
+            AddedService,
+            createAt: Date.now(),
+            updateAt: Date.now()
         })
         if (body) {
             ctx.body = {code: 1, msg: '订单创建成功'}
