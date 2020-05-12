@@ -340,7 +340,7 @@ function req(url, data) {
                             resolve({type: 1, data: "没有查询到该订单的信息"})
                         }
                     }else{
-                        resolve({type: 1, data: "错误"})
+                        resolve({type: 1, data: "请求错误"})
                     }
                 }
             })
