@@ -20,6 +20,64 @@ router.post('/create', async function (ctx, next) {
         special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no
     } = ctx.request.body || ""
     let {Cargo = [], AddedService = []} = ctx.request.body
+    let body = await OrderModel.create({
+        account_id,
+        orderid,
+        j_company,
+        j_contact,
+        j_tel,
+        j_mobile,
+        j_province,
+        j_city,
+        j_county,
+        j_address,
+        d_company,
+        d_contact,
+        d_tel,
+        d_mobile,
+        d_province,
+        d_city,
+        d_county,
+        d_address,
+        custid,
+        pay_method,
+        express_type,
+        parcel_quantity,
+        cargo_length,
+        cargo_width,
+        cargo_height,
+        volume,
+        cargo_total_weight,
+        sendstarttime,
+        is_docall,
+        need_return_tracking_no,
+        return_tracking,
+        temp_range,
+        template,
+        remark,
+        oneself_pickup_flg,
+        special_delivery_type_code,
+        special_delivery_value,
+        realname_num,
+        routelabelForReturn,
+        routelabelService,
+        is_unified_waybill_no,
+        Cargo,
+        AddedService,
+        createAt: Date.now(),
+        updateAt: Date.now()
+    })
+    if (body) {
+        ctx.body = {code: 1, msg: '订单创建成功'}
+    } else {
+        ctx.response.status = 400;
+        ctx.body = {code: -1, msg: '订单创建失败，请重试'}
+    }
+})
+
+router.get('/submit', async function (ctx, next) {
+    let orderid = ctx.request.query.orderid
+    let order = await OrderModel.findOne({orderid: orderid})
     let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
     let xml = {
         Request: {
@@ -29,59 +87,58 @@ router.post('/create', async function (ctx, next) {
                 Order: {
                     $: {
                         orderid: orderid,
-                        j_company: j_company,
-                        j_contact: j_contact,
-                        j_tel: j_tel,
-                        j_mobile: j_mobile,
-                        j_province: j_province,
-                        j_city: j_city,
-                        j_county: j_county,
-                        j_address: j_address,
-                        d_company: d_company,
-                        d_contact: d_contact,
-                        d_tel: d_tel,
-                        d_mobile: d_mobile,
-                        d_province: d_province,
-                        d_city: d_city,
-                        d_county: d_county,
-                        d_address: d_address,
-                        custid: custid,
-                        pay_method: pay_method,
-                        express_type: express_type,
-                        parcel_quantity: parcel_quantity,
-                        cargo_length: cargo_length,
-                        cargo_width: cargo_width,
-                        cargo_height: cargo_height,
-                        volume: volume,
-                        cargo_total_weight: cargo_total_weight,
-                        sendstarttime: sendstarttime,
-                        is_docall: is_docall,
-                        need_return_tracking_no: need_return_tracking_no,
-                        return_tracking: return_tracking,
-                        temp_range: temp_range,
-                        template: template,
-                        remark: remark,
-                        oneself_pickup_flg: oneself_pickup_flg,
-                        special_delivery_type_code: special_delivery_type_code,
-                        special_delivery_value: special_delivery_value,
-                        realname_num: realname_num,
-                        routelabelForReturn: routelabelForReturn,
-                        routelabelService: routelabelService,
-                        is_unified_waybill_no: is_unified_waybill_no
+                        j_company: order.j_company,
+                        j_contact: order.j_contact,
+                        j_tel: order.j_tel,
+                        j_mobile: order.j_mobile,
+                        j_province: order.j_province,
+                        j_city: order.j_city,
+                        j_county: order.j_county,
+                        j_address: order.j_address,
+                        d_company: order.d_company,
+                        d_contact: order.d_contact,
+                        d_tel: order.d_tel,
+                        d_mobile: order.d_mobile,
+                        d_province: order.d_province,
+                        d_city: order.d_city,
+                        d_county: order.d_county,
+                        d_address: order.d_address,
+                        custid: order.custid,
+                        pay_method: order.pay_method,
+                        express_type: order.express_type,
+                        parcel_quantity: order.parcel_quantity,
+                        cargo_length: order.cargo_length,
+                        cargo_width: order.cargo_width,
+                        cargo_height: order.cargo_height,
+                        volume: order.volume,
+                        cargo_total_weight: order.cargo_total_weight,
+                        sendstarttime: order.sendstarttime,
+                        is_docall: order.is_docall,
+                        return_tracking: order.return_tracking,
+                        temp_range: order.temp_range,
+                        template: order.template,
+                        remark: order.remark,
+                        oneself_pickup_flg: order.oneself_pickup_flg,
+                        special_delivery_type_code: order.special_delivery_type_code,
+                        special_delivery_value: order.special_delivery_value,
+                        realname_num: order.realname_num,
+                        routelabelForReturn: order.routelabelForReturn,
+                        routelabelService: order.routelabelService,
+                        is_unified_waybill_no: order.is_unified_waybill_no
                     }
                 }
             }
         }
     }
     let cargos = []
-    for (let i of Cargo) {
+    for (let i of order.Cargo) {
         cargos.push({$: i})
     }
     xml['Request']['Body']['Order']['Cargo'] = cargos
 
-    if (AddedService.length > 0) {
+    if (order.AddedService.length > 0) {
         let addeds = []
-        for (let j of AddedService) {
+        for (let j of order.AddedService) {
             addeds.push({$: j})
         }
         xml['Request']['Body']['Order']['AddedService'] = {}
@@ -99,63 +156,10 @@ router.post('/create', async function (ctx, next) {
     }
     let result = await req(url, data)
     console.log(JSON.stringify(result), '-------------------------result')
+    let mailno = result['data']['$']['mailno']
+    await OrderModel.update({orderid: ordeerid}, {mailno: mailno})
     if (result.type == 2) {
-        let mailno = result['data']['$']['mailno']
-        // let mailno = ''
-        let body = await OrderModel.create({
-            account_id,
-            orderid,
-            mailno,
-            j_company,
-            j_contact,
-            j_tel,
-            j_mobile,
-            j_province,
-            j_city,
-            j_county,
-            j_address,
-            d_company,
-            d_contact,
-            d_tel,
-            d_mobile,
-            d_province,
-            d_city,
-            d_county,
-            d_address,
-            custid,
-            pay_method,
-            express_type,
-            parcel_quantity,
-            cargo_length,
-            cargo_width,
-            cargo_height,
-            volume,
-            cargo_total_weight,
-            sendstarttime,
-            is_docall,
-            need_return_tracking_no,
-            return_tracking,
-            temp_range,
-            template,
-            remark,
-            oneself_pickup_flg,
-            special_delivery_type_code,
-            special_delivery_value,
-            realname_num,
-            routelabelForReturn,
-            routelabelService,
-            is_unified_waybill_no,
-            Cargo,
-            AddedService,
-            createAt: Date.now(),
-            updateAt: Date.now()
-        })
-        if (body) {
-            ctx.body = {code: 1, msg: '订单创建成功'}
-        } else {
-            ctx.response.status = 400;
-            ctx.body = {code: -1, msg: '订单创建失败，请重试'}
-        }
+        ctx.body = {code: 1, msg: '订单提交成功'}
     } else {
         ctx.body = {code: -1, msg: result.data._}
     }
