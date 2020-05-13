@@ -156,9 +156,9 @@ router.get('/submit', async function (ctx, next) {
     }
     let result = await req(url, data)
     console.log(JSON.stringify(result), '-------------------------result')
-    let mailno = result['data']['$']['mailno']
-    await OrderModel.update({orderid: ordeerid}, {mailno: mailno})
     if (result.type == 2) {
+        let mailno = result['data']['$']['mailno']
+        await OrderModel.update({orderid: ordeerid}, {mailno: mailno, dealtype: 2})
         ctx.body = {code: 1, msg: '订单提交成功'}
     } else {
         ctx.body = {code: -1, msg: result.data._}
