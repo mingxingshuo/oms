@@ -32,7 +32,7 @@ var OrderSchema = new Schema({
     cargo_height: Number,
     volume: Number,
     cargo_total_weight: Number,
-    sendstarttime: Date,
+    sendstarttime: String,
     is_docall: Number,
     need_return_tracking_no: String,
     return_tracking: String,
