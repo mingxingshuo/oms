@@ -167,7 +167,7 @@ router.get('/submit', async function (ctx, next) {
 
 router.get('/find', async function (ctx, next) {
     let {account_id, page = 1} = ctx.request.query;
-    let orders = await OrderModel.find({account_id: account_id}).skip((page - 1) * 10).limit(10)
+    let orders = await OrderModel.find({account_id: account_id}).skip((page - 1) * 10).limit(10).sort({updateAt:-1})
     let count = await OrderModel.count({account_id: account_id})
     if (orders.length > 0) {
         ctx.body = {code: 1, msg: '查询成功', data: orders, count: count}
