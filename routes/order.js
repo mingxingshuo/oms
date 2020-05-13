@@ -334,7 +334,12 @@ function req(url, data) {
                         resolve({type: 2, data: result.Response.Body[0].OrderConfirmResponse[0]})
                     } else if (JSON.stringify(result.Response.Body[0]).indexOf('RouteResponse') != -1) {
                         if(result.Response.Body[0] && result.Response.Body[0].RouteResponse && result.Response.Body[0].RouteResponse[0].Route){
-                            resolve({type: 2, data: result.Response.Body[0].RouteResponse[0].Route[0].$})
+                            let arr = []
+                            for(let i of result.Response.Body[0].RouteResponse[0].Route){
+                                arr.push(i.$)
+                            }
+                            console.log(arr,'------------------')
+                            resolve({type: 2, data: arr})
                         }else{
                             resolve({type: 1, data: "没有查询到该订单的物流信息"})
                         }
