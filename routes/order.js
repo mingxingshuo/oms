@@ -158,7 +158,7 @@ router.get('/submit', async function (ctx, next) {
     console.log(JSON.stringify(result), '-------------------------result')
     if (result.type == 2) {
         let mailno = result['data']['$']['mailno']
-        await OrderModel.update({orderid: ordeerid}, {mailno: mailno, dealtype: 2})
+        await OrderModel.update({orderid: ordeerid}, {mailno: mailno, dealtype: 1})
         ctx.body = {code: 1, msg: '订单提交成功'}
     } else {
         ctx.body = {code: -1, msg: result.data._}
@@ -167,7 +167,10 @@ router.get('/submit', async function (ctx, next) {
 
 router.get('/find', async function (ctx, next) {
     let {account_id, page = 1} = ctx.request.query;
-    let orders = await OrderModel.find({account_id: account_id}).skip((page - 1) * 10).limit(10).sort({updateAt:-1})
+    let orders = await OrderModel.find({
+        account_id: account_id,
+        dealtype: {$ne: 2}
+    }).skip((page - 1) * 10).limit(10).sort({updateAt: -1})
     let count = await OrderModel.count({account_id: account_id})
     if (orders.length > 0) {
         ctx.body = {code: 1, msg: '查询成功', data: orders, count: count}
