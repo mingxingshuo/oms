@@ -8,6 +8,7 @@
 </head>
 <body>
 <div class="container">
+    <button onclick="all">跳转微信</button>
     <a href="weixin://dl">所有</a>
     <hr /><a href="weixin://dl/officialaccounts">朋友圈</a>
     <hr /><a href="weixin://dl/recommendation">新的朋友</a>
@@ -25,7 +26,21 @@
 </body>
 <script>
     function all() {
-        window.location.replace('weixin://dl');
+      if(is_weixin()) {
+        alert("安卓机，不操作")
+      } else {
+        alert("安卓机，不操作");
+        window.location.replace('weixin://');
+      }
+    }
+
+    function is_weixin() {
+      var ua = window.navigator.userAgent.toLowerCase();
+      if (ua.match(/MicroMessenger/i) == 'micromessenger') {
+        return true;
+      } else {
+        return false;
+      }
     }
 
     function officialaccounts() {
