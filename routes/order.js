@@ -256,7 +256,8 @@ router.get('/confirm', async function (ctx, next) {
         }
     }
     let result = await req(url, data)
-    await OrderModel.update({orderid: orderid}, {dealtype: dealtype})
+  console.log(result, "result-----------------------2020-0518")
+    // await OrderModel.update({orderid: orderid}, {dealtype: dealtype})
     ctx.body = {code: 1, msg: '确认或取消成功', data: result.data}
 })
 
