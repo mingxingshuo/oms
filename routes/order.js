@@ -255,10 +255,15 @@ router.get('/confirm', async function (ctx, next) {
             verifyCode: str
         }
     }
-    let result = await req(url, data)
-  console.log(result, "result-----------------------2020-0518")
-    // await OrderModel.update({orderid: orderid}, {dealtype: dealtype})
-    ctx.body = {code: 1, msg: '确认或取消成功', data: result.data}
+    let result = await req(url, data);
+    console.log(result, "result-----------------------取消订单打印");
+    // 添加订单状态的判断
+    if(result.type === 1 && result.data.$.code === '8060') { // 订单已签收
+      ctx.body = {code: -1, msg: result.data._}
+    } else {
+      await OrderModel.update({orderid: orderid}, {dealtype: dealtype});
+      ctx.body = {code: 1, msg: '确认或取消成功', data: result.data}
+    }
 })
 
 router.get('/route', async function (ctx, next) {
