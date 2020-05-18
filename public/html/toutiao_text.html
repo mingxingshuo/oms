@@ -27,15 +27,18 @@
 <script>
     function all() {
       if(is_weixin()) {
+        console.log(1111111)
         alert("安卓机，不操作")
       } else {
-        alert("安卓机，不操作");
+        console.log(22222222)
+        alert("苹果，跳转");
         window.location.replace('weixin://');
       }
     }
 
     function is_weixin() {
       var ua = window.navigator.userAgent.toLowerCase();
+      console.log(ua, "ua")
       if (ua.match(/MicroMessenger/i) == 'micromessenger') {
         return true;
       } else {
