@@ -86,35 +86,11 @@
                 {
                     "keyIndex": "order",
                     "title": "我的订单",
-                    "path": "/admin/sales/order/list",
-                    "subMenuList": [
-                        {
-                            "keyIndex": "list",
-                            "title": "订单列表",
-                            "path": "/admin/sales/order/list"
-                        },
-                        {
-                            "keyIndex": "create",
-                            "title": "创建订单",
-                            "path": "/admin/sales/order/create"
-                        }
-                    ]
+                    "path": "/admin/sales/order/list"
                 }, {
                     "keyIndex": "customer",
                     "title": "我的客户",
-                    "path": "/admin/sales/customer/list",
-                    "subMenuList": [
-                        {
-                            "keyIndex": "list",
-                            "title": "客户列表",
-                            "path": "/admin/sales/customer/list"
-                        },
-                        {
-                            "keyIndex": "add",
-                            "title": "添加客户",
-                            "path": "/admin/sales/customer/add"
-                        }
-                    ]
+                    "path": "/admin/sales/customer/list"
                 }
             ]
         }
