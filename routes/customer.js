@@ -18,8 +18,8 @@ router.post('/', async(ctx, next) => {
 
 router.get('/', async(ctx, next) => {
     let {page} = ctx.query, result, total;
-    let result = await CustomerModel.find().skip((page - 1) * 10).limit(10);
-    let total = await CustomerModel.count();
+    result = await CustomerModel.find().skip((page - 1) * 10).limit(10);
+    total = await CustomerModel.count();
     if (result.length > 0) {
         ctx.body = {code: 1, msg: '查询成功', data: result, total}
     } else {
