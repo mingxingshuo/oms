@@ -10,6 +10,7 @@ const userAgent = require('koa2-useragent');
 const index = require('./routes/index');
 const user = require('./routes/user');
 const order = require('./routes/order');
+const customer = require('./routes/customer');
 
 // error handler
 onerror(app);
@@ -44,6 +45,7 @@ app.use(async(ctx, next) => {
 app.use(index.routes(), index.allowedMethods());
 app.use(user.routes(), user.allowedMethods());
 app.use(order.routes(), order.allowedMethods());
+app.use(customer.routes(), customer.allowedMethods());
 
 
 // error-handling

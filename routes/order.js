@@ -12,7 +12,7 @@ var checkword = "QE4CwVWGy1lBBIW5uoYFsZEwfyI7ScuU"
 
 router.post('/create', async function (ctx, next) {
     let {
-        account_id, orderid, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
+        account_id, customer_id, orderid, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
         d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
         pay_method, express_type, parcel_quantity, cargo_length, cargo_width, cargo_height, volume,
         cargo_total_weight, sendstarttime, is_docall = 1, need_return_tracking_no, return_tracking,
@@ -22,6 +22,7 @@ router.post('/create', async function (ctx, next) {
     let {Cargo = [], AddedService = []} = ctx.request.body
     let body = await OrderModel.create({
         account_id,
+        customer_id,
         orderid,
         j_company,
         j_contact,
@@ -258,11 +259,11 @@ router.get('/confirm', async function (ctx, next) {
     let result = await req(url, data);
     console.log(result, "result-----------------------取消订单打印");
     // 添加订单状态的判断
-    if(result.type === 1 && result.data.$.code === '8060') { // 订单已签收
-      ctx.body = {code: -1, msg: result.data._}
+    if (result.type === 1 && result.data.$.code === '8060') { // 订单已签收
+        ctx.body = {code: -1, msg: result.data._}
     } else {
-      await OrderModel.update({orderid: orderid}, {dealtype: dealtype});
-      ctx.body = {code: 1, msg: '确认或取消成功', data: result.data}
+        await OrderModel.update({orderid: orderid}, {dealtype: dealtype});
+        ctx.body = {code: 1, msg: '确认或取消成功', data: result.data}
     }
 })
 
