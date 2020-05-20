@@ -26,23 +26,16 @@
 </body>
 <script>
     function all1() {
-      if(is_weixin()) {
+      var u = navigator.userAgent, app = navigator.appVersion;
+      var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //g
+      var isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+      if(isAndroid) {
         console.log(1111111)
         alert("安卓机，不操作")
-      } else {
+      } else if(isIOS) {
         console.log(22222222)
         alert("苹果，跳转");
         window.location.replace('weixin://');
-      }
-    }
-
-    function is_weixin() {
-      var ua = window.navigator.userAgent.toLowerCase();
-      console.log(ua, "ua")
-      if (ua.match(/MicroMessenger/i) == 'micromessenger') {
-        return true;
-      } else {
-        return false;
       }
     }
 

@@ -1,5 +1,25 @@
 {
     "文件功能": "前端路由根据权限获取",
+    "admin": [
+        {
+            "icon": "iconusers",
+            "keyIndex": "user",
+            "role": 0,
+            "subMenuList": [
+                {
+                    "keyIndex": "manage",
+                    "title": "账户列表",
+                    "path": "/admin/user/manage"
+                },
+                {
+                    "keyIndex": "add",
+                    "title": "新增用户",
+                    "path": "/admin/user/add"
+                }
+            ],
+            "title": "账户管理"
+        }
+    ],
     "0": [
         {
             "icon": "iconusers",
@@ -59,19 +79,42 @@
     ],
     "2": [
         {
-            "keyIndex": "order",
-            "title": "订单管理",
+            "keyIndex": "sales",
+            "title": "销售专区",
             "icon": "iconorder",
             "subMenuList": [
                 {
-                    "keyIndex": "list",
-                    "title": "订单列表",
-                    "path": "/admin/order/list"
-                },
-                {
-                    "keyIndex": "create",
-                    "title": "创建订单",
-                    "path": "/admin/order/create"
+                    "keyIndex": "order",
+                    "title": "我的订单",
+                    "path": "/admin/sales/order/list",
+                    "subMenuList": [
+                        {
+                            "keyIndex": "list",
+                            "title": "订单列表",
+                            "path": "/admin/sales/order/list"
+                        },
+                        {
+                            "keyIndex": "create",
+                            "title": "创建订单",
+                            "path": "/admin/sales/order/create"
+                        }
+                    ]
+                }, {
+                    "keyIndex": "customer",
+                    "title": "我的客户",
+                    "path": "/admin/sales/customer/list",
+                    "subMenuList": [
+                        {
+                            "keyIndex": "list",
+                            "title": "客户列表",
+                            "path": "/admin/sales/customer/list"
+                        },
+                        {
+                            "keyIndex": "add",
+                            "title": "添加客户",
+                            "path": "/admin/sales/customer/add"
+                        }
+                    ]
                 }
             ]
         }
