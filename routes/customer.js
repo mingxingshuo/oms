@@ -1,6 +1,5 @@
 const router = require('koa-router')();
 const CustomerModel = require('../model/Customer.js');
-const routers = require('../conf/router');
 router.prefix('/customer');
 
 router.post('/', async(ctx, next) => {
