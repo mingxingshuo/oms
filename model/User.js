@@ -10,7 +10,7 @@ var UserSchema = new Schema({
         type: String,
         default: "管理员"
     },
-    role: {  //0 超级权限  1 1级代理  2  2级代理
+    role: {  // 9999999999 超管 //0 公司/团队 1 管理/审核  2 销售
         type: Number,
         default: 2
     },
@@ -19,6 +19,10 @@ var UserSchema = new Schema({
         default: 0
     },
     remarks : String,    // 备注
+    department: {        // 部门
+        type: String,
+        default: ""
+    },
     createAt: {
         type: Number,
         default: Date.now()
@@ -28,7 +32,11 @@ var UserSchema = new Schema({
         default: Date.now()
     },
     loginAt: Number,
-    childAccount : []
+    childAccount : [],
+    wechatList: {
+        type: Array,
+        default: []
+    }
 });
 
 var UserModel = db.model('User', UserSchema);
