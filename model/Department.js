@@ -4,13 +4,12 @@ var connect_url = require('../conf/proj.json').mongodb;
 var db = mongoose.createConnection(connect_url);
 
 var DepartmentSchema = new Schema({
-    bossId : String,        // 主账号id
-    adminId : {             // 管理账号id
+    parentId: {
         type: String,
         default: ""
     },
-    name: String,
-    remarks : String,    // 备注
+    name: String,       // 部门名称
+    remarks: String,    // 备注
     createAt: {
         type: Number,
         default: Date.now()

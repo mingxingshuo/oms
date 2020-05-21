@@ -4,27 +4,19 @@ var connect_url = require('../conf/proj.json').mongodb;
 var db = mongoose.createConnection(connect_url);
 
 var UserSchema = new Schema({
-    bossId :  {             // 主账号id
+    parentId:  {             // 父账号id
         type: String,
         default: ""
     },
-    adminId : {             // 管理账号id
-        type: String,
-        default: ""
-    },
-    username : String,
-    password : String,
-    nickName : {  // 昵称
+    username: String,
+    password: String,
+    nickName: {  // 昵称
         type: String,
         default: "管理员"
     },
     role: {  // 9999999999 超管 //0 公司/团队 1 管理/审核  2 销售
         type: Number,
         default: 2
-    },
-    power : {    // 0 无测试权限  1 有
-        type: Number,
-        default: 0
     },
     remarks : String,    // 备注
     department: {        // 部门
@@ -40,7 +32,7 @@ var UserSchema = new Schema({
         default: Date.now()
     },
     loginAt: Number,
-    childAccount : [],
+    childAccount: [],     // 子账号
     // wechatList: {
     //     type: Array,
     //     default: []

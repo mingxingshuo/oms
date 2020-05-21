@@ -32,7 +32,7 @@ router.post('/', async (ctx, next) => {
         if(account_id) {
             let user = await UserModel.findById(account_id);
             if(user.role === 9999999999 || user.role < role) {
-                let data = await UserModel.create({username, nickName, password, role, remarks, power});
+                let data = await UserModel.create({username, nickName, password, role, remarks, power, parentId: account_id});
                 if (data) {
                     ctx.body = {code: 1, msg: '账户创建成功', data}
                 } else {
@@ -53,29 +53,13 @@ router.post('/', async (ctx, next) => {
 router.get('/', async (ctx, next) => {
     let {account_id, username, page = 1} = ctx.query, result, total;
     if (username && account_id) {
-        result = await UserModel.find({username: {$regex: new RegExp(username)}}).skip((page - 1) * 10).limit(10);
-        total = await UserModel.count({username: {$regex: new RegExp(username)}});
+        result = await UserModel.find({username: {$regex: new RegExp(username)}, parentId: account_id}).skip((page - 1) * 10).limit(10);
+        total = await UserModel.count({username: {$regex: new RegExp(username)}, parentId: account_id});
         ctx.body = {code: 1, msg: '查询成功', data: result, total}
     } else if (account_id) {
-        checkUserRole(account_id)
-            .then(async role => {
-                if (role === 0) {
-                    result = await UserModel.find({bossId: account_id}).skip((page - 1) * 10).limit(10);
-                    total = await UserModel.count({bossId: account_id});
-                    ctx.body = {code: 1, msg: "查询成功", data: result, total};
-                } else if (role === 1) {
-                    result = await UserModel.find({adminId: account_id}).skip((page - 1) * 10).limit(10);
-                    total = await UserModel.count({adminId: account_id});
-                    ctx.body = {code: 1, msg: "查询成功", data: result, total};
-                } else {
-                    ctx.response.status = 404;
-                    ctx.body = {code: -1, msg: "该账户无查询权限"}
-                }
-            })
-            .catch(err => {
-                ctx.response.status = err.status;
-                ctx.body = err;
-            });
+        result = await UserModel.find({parentId: account_id}).skip((page - 1) * 10).limit(10);
+        total = await UserModel.count({parentId: account_id});
+        ctx.body = {code: 1, msg: "查询成功", data: result, total};
     } else {
         ctx.response.status = 401;
         ctx.body = {code: -1, msg: "登录信息失效，账户id缺失"}
@@ -136,6 +120,17 @@ router.delete('/', async (ctx, next) => {
     let result = await UserModel.findByIdAndRemove(_id);
     if (result) {
         ctx.body = {code: 1, msg: '删除成功'}
+    } else {
+        ctx.response.status = 400;
+        ctx.body = {code: -1, msg: "删除失败"}
+    }
+});
+
+router.get('/deleteRole', async (ctx, next) => {
+    let {role} = ctx.query;
+    let result = await UserModel.remove({role});
+    if (result) {
+        ctx.body = {code: 1, msg: '删除成功', result}
     } else {
         ctx.response.status = 400;
         ctx.body = {code: -1, msg: "删除失败"}

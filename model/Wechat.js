@@ -4,18 +4,18 @@ var connect_url = require('../conf/proj.json').mongodb;
 var db = mongoose.createConnection(connect_url);
 
 var WechatSchema = new Schema({
-    bossId : String,        // 主账号id
-    adminId : {             // 管理账号id
+    hostId: String,        // 主账号id
+    adminId: {             // 管理账号id
         type: String,
         default: ""
     },
-    userId : {               // 销售账号id
+    userId: {               // 销售账号id
         type: String,
         default: ""
     },
-    wechatId : String,
-    nickName : String,   // 昵称
-    remarks : String,    // 备注
+    wechatId: String,
+    nickName: String,   // 昵称
+    remarks: String,    // 备注
     createAt: {
         type: Number,
         default: Date.now()
