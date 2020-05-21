@@ -38,6 +38,21 @@
                 }
             ],
             "title": "账户管理"
+        }, {
+            "keyIndex": "sales",
+            "title": "销售专区",
+            "icon": "iconorder",
+            "subMenuList": [
+                {
+                    "keyIndex": "order",
+                    "title": "订单列表",
+                    "path": "/admin/sales/order/list"
+                }, {
+                    "keyIndex": "customer",
+                    "title": "客户列表",
+                    "path": "/admin/sales/customer/list"
+                }
+            ]
         }
     ],
     "1": [
@@ -58,21 +73,19 @@
                 }
             ],
             "title": "账户管理"
-        },
-        {
-            "keyIndex": "order",
-            "title": "订单管理",
+        }, {
+            "keyIndex": "sales",
+            "title": "销售专区",
             "icon": "iconorder",
             "subMenuList": [
                 {
-                    "keyIndex": "list",
+                    "keyIndex": "order",
                     "title": "订单列表",
-                    "path": "/admin/order/list"
-                },
-                {
-                    "keyIndex": "create",
-                    "title": "创建订单",
-                    "path": "/admin/order/create"
+                    "path": "/admin/sales/order/list"
+                }, {
+                    "keyIndex": "customer",
+                    "title": "客户列表",
+                    "path": "/admin/sales/customer/list"
                 }
             ]
         }

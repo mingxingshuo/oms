@@ -33,10 +33,10 @@ var UserSchema = new Schema({
     },
     loginAt: Number,
     childAccount : [],
-    wechatList: {
-        type: Array,
-        default: []
-    }
+    // wechatList: {
+    //     type: Array,
+    //     default: []
+    // }
 });
 
 var UserModel = db.model('User', UserSchema);
