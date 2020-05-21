@@ -139,7 +139,7 @@ router.get('/all', async (ctx, next) => {
 
 router.get('/updateParent', async (ctx, next) => {
    let {id} = ctx.query;
-   let result = await UserModel.findByIdAndUpdate(id, {parentId: "5ec640687b0b607e83979798"}, {new, true});
+   let result = await UserModel.findByIdAndUpdate(id, {parentId: "5ec640687b0b607e83979798"}, {new: true});
    if(result) {
        ctx.body = {code: 1, msg: "修改成功", data: result}
    } else {
