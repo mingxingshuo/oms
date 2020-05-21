@@ -15,8 +15,8 @@ router.post('/login', async (ctx, next) => {
         await result.save();
         result = result.toObject();
         const {role} = result;
+        result.role = role === 9999999999 ? "后台管理员账号" : role === 0 ? "主账号" : role === 1 ? "管理账号" : "销售账号"
         delete result.password;
-        delete result.role;
         ctx.body = {code: 1, msg: '登录成功', data: result, routers: routers[role.toString()]}
     } else {
         ctx.body = {code: -1, msg: '用户名或密码不正确'}
