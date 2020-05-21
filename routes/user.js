@@ -10,6 +10,7 @@ router.prefix('/user');
 router.post('/login', async (ctx, next) => {
     let {username, password} = ctx.request.body;
     let result = await UserModel.findOne({username});
+    console.log(result, "result")
     if (result && result._id && md5(md5(result.password + salt)) === password) {
         result.loginAt = Date.now();
         await result.save();
