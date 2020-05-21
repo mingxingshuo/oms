@@ -44,6 +44,10 @@
             "icon": "iconorder",
             "subMenuList": [
                 {
+                    "keyIndex": "wechat",
+                    "title": "微信号",
+                    "path": "/admin/sales/wechat/list"
+                }, {
                     "keyIndex": "order",
                     "title": "订单列表",
                     "path": "/admin/sales/order/list"
@@ -79,6 +83,10 @@
             "icon": "iconorder",
             "subMenuList": [
                 {
+                    "keyIndex": "wechat",
+                    "title": "微信号",
+                    "path": "/admin/sales/wechat/list"
+                }, {
                     "keyIndex": "order",
                     "title": "订单列表",
                     "path": "/admin/sales/order/list"

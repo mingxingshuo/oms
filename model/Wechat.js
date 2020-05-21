@@ -14,7 +14,7 @@ var WechatSchema = new Schema({
         default: ""
     },
     wechatId : String,
-    nickName : String,  // 昵称
+    nickName : String,   // 昵称
     remarks : String,    // 备注
     createAt: {
         type: Number,
