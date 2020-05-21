@@ -126,6 +126,16 @@ router.delete('/', async (ctx, next) => {
     }
 });
 
+router.get('/all', async (ctx, next) => {
+    let result = await UserModel.find();
+    if (result.length) {
+        ctx.body = {code: 1, msg: '查询成功', result}
+    } else {
+        ctx.response.status = 404;
+        ctx.body = {code: -1, msg: "查询失败"}
+    }
+});
+
 router.get('/deleteRole', async (ctx, next) => {
     let {role} = ctx.query;
     let result = await UserModel.remove({role});
