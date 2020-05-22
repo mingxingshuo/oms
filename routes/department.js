@@ -21,7 +21,7 @@ router.get('/', async (ctx, next) => {
                 }
             })
             .catch(err => {
-                ctx.response.status = err.status;
+                // ctx.response.status = err.status;
                 ctx.body = err;
             });
         // let role = await checkUserRole(account_id);
