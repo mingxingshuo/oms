@@ -12,18 +12,16 @@ router.get('/', async (ctx, next) => {
                 if (role === 0) {
                     result = await DepartmentModel.find({parentId: account_id}).skip((page - 1) * 10).limit(10);
                     total = await DepartmentModel.estimatedDocumentCount({parentId: account_id});
-                    ctx.response.status = 200;
-                    ctx.body = {code: 1, msg: "查询成功", data: result, total};
-                    console.log(ctx)
+                    await ctx.response.status = 200;
+                    await ctx.body = {code: 1, msg: "查询成功", data: result, total};
                 } else {
                     ctx.response.status = 403;
                     ctx.body = {code: -1, msg: "该账户无操作权限"};
                 }
             })
             .catch(err => {
-                console.log(err, "err")
                 ctx.response.status = err.status;
-                // ctx.body = err;
+                ctx.body = err;
             });
     } else {
         ctx.response.status = 401;
