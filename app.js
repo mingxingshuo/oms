@@ -30,7 +30,7 @@ app.use(views(__dirname + '/views', {
 
 app.use(userAgent());
 
-app.all('*', async (ctx, next) => {
+app.use('*', async (ctx, next) => {
     console.log("我是app.all")
     let userId, account_id = ctx.query.account_id;
     if(account_id) {
