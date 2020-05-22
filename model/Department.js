@@ -8,8 +8,16 @@ var DepartmentSchema = new Schema({
         type: String,
         default: ""
     },
+    manageId: {         // 管理账号id
+        type: String,
+        default: ""
+    },
     name: String,       // 部门名称
     remarks: String,    // 备注
+    isDelete: {         // 是否删除
+        type: Number,
+        default: 0
+    },
     createAt: {
         type: Number,
         default: Date.now()

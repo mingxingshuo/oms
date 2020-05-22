@@ -10,11 +10,11 @@ var UserSchema = new Schema({
     },
     username: String,
     password: String,
-    nickName: {  // 昵称
+    nickName: {           // 昵称
         type: String,
-        default: "管理员"
+        default: "昵称"
     },
-    role: {  // 9999999999 超管 //0 公司/团队 1 管理/审核  2 销售
+    role: {              // 9999999999 超管 //0 公司/团队 1 管理/审核  2 销售
         type: Number,
         default: 2
     },
@@ -31,12 +31,7 @@ var UserSchema = new Schema({
         type: Number,
         default: Date.now()
     },
-    loginAt: Number,
-    childAccount: [],     // 子账号
-    // wechatList: {
-    //     type: Array,
-    //     default: []
-    // }
+    loginAt: Number
 });
 
 var UserModel = db.model('User', UserSchema);

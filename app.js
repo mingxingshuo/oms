@@ -11,6 +11,8 @@ const index = require('./routes/index');
 const user = require('./routes/user');
 const order = require('./routes/order');
 const customer = require('./routes/customer');
+const wechat = require('./routes/wechat');
+const department = require('./routes/department');
 
 // error handler
 onerror(app);
@@ -46,6 +48,8 @@ app.use(index.routes(), index.allowedMethods());
 app.use(user.routes(), user.allowedMethods());
 app.use(order.routes(), order.allowedMethods());
 app.use(customer.routes(), customer.allowedMethods());
+app.use(wechat.routes(), wechat.allowedMethods());
+app.use(department.routes(), department.allowedMethods());
 
 
 // error-handling

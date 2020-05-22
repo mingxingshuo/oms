@@ -1,7 +1,5 @@
 const router = require('koa-router')();
 const UserModel = require('../model/User.js');
-const WechatModel = require('../model/Wechat.js');
-const DepartmentModel = require('../model/Department.js');
 const md5 = require('../util/encryptByMD5');
 const salt = "QE4CwVWGy1lBBIW5uoYFsZEwfyI7ScuU";
 const routers = require('../conf/router');
@@ -155,68 +153,6 @@ router.get('/deleteRole', async (ctx, next) => {
     } else {
         ctx.response.status = 400;
         ctx.body = {code: -1, msg: "删除失败"}
-    }
-});
-
-// 获取微信号
-router.get('/wechat', async (ctx, next) => {
-    let {account_id, page = 1} = ctx.query, result, total;
-    if (account_id) {
-        checkUserRole(account_id)
-            .then(async role => {
-                if (role === 0) {
-                    result = await WechatModel.find({bossId: account_id}).skip((page - 1) * 10).limit(10);
-                    total = await WechatModel.count({bossId: account_id});
-                    ctx.body = {code: 1, msg: "查询成功", data: result, total};
-                } else if (role === 1) {
-                    result = await WechatModel.find({adminId: account_id}).skip((page - 1) * 10).limit(10);
-                    total = await WechatModel.count({adminId: account_id});
-                    ctx.body = {code: 1, msg: "查询成功", data: result, total};
-                } else if (role === 2) {
-                    result = await WechatModel.find({userId: account_id}).skip((page - 1) * 10).limit(10);
-                    total = await WechatModel.count({userId: account_id});
-                    ctx.body = {code: 1, msg: "查询成功", data: result, total};
-                } else {
-                    ctx.response.status = 404;
-                    ctx.body = {code: -1, msg: "该账户无查询权限"}
-                }
-            })
-            .catch(err => {
-                ctx.response.status = err.status;
-                ctx.body = err;
-            });
-    } else {
-        ctx.response.status = 401;
-        ctx.body = {code: -1, msg: "登录信息失效，账户id缺失"}
-    }
-});
-
-// 获取部门
-router.get('/department', async (ctx, next) => {
-    let {account_id, page = 1} = ctx.query, result, total;
-    if (account_id) {
-        checkUserRole(account_id)
-            .then(async role => {
-                if (role === 0) {
-                    result = await DepartmentModel.find({bossId: account_id}).skip((page - 1) * 10).limit(10);
-                    total = await DepartmentModel.count({bossId: account_id});
-                    ctx.body = {code: 1, msg: "查询成功", data: result, total};
-                } else if (role === 1) {
-                    result = await DepartmentModel.find({adminId: account_id}).skip((page - 1) * 10).limit(10);
-                    total = await DepartmentModel.count({adminId: account_id});
-                    ctx.body = {code: 1, msg: "查询成功", data: result, total};
-                } else {
-                    ctx.response.status = 404;
-                    ctx.body = {code: -1, msg: "该账户无查询权限"};
-                }
-            })
-            .catch(err => {
-                ctx.response.status = err.status;
-                ctx.body = err;
-            });
-    } else {
-        ctx.response.status = 401;
-        ctx.body = {code: -1, msg: "登录信息失效，账户id缺失"}
     }
 });
 
