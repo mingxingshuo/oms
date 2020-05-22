@@ -31,6 +31,7 @@ router.get('/', async (ctx, next) => {
 
 router.post('/', async (ctx, next) => {
     let {account_id, name, remarks} = ctx.request.body;
+    console.log(account_id, name, remarks)
     let result = await DepartmentModel.find({name, parentId: account_id});
     if (result.length > 0) {
         ctx.body = {code: 2, msg: "该账户名已存在，请检查输入是否有误"}
