@@ -7,6 +7,8 @@ const bodyparser = require('koa-bodyparser');
 const logger = require('koa-logger');
 const userAgent = require('koa2-useragent');
 
+const checkUserRole = require("../util/checkUserRole");
+
 const index = require('./routes/index');
 const user = require('./routes/user');
 const order = require('./routes/order');
@@ -29,6 +31,24 @@ app.use(views(__dirname + '/views', {
 //app.set('view cache', true);
 
 app.use(userAgent());
+
+app.all('*', async (ctx, next) => {
+    console.log("我是app.all")
+    let userId, account_id = ctx.query.account_id;
+    if(account_id) {
+        userId = account_id;
+    } else {
+        userId = ctx.request.body.account_id;
+    }
+    if(userId) {
+        console.log("我是app.all next")
+        await next()
+    } else {
+        console.log("我是app.all 401")
+        ctx.response.status = 401;
+        ctx.body = {code: -1, msg: "登录信息失效，账户id缺失"}
+    }
+});
 
 
 app.use(async(ctx, next) => {

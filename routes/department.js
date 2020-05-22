@@ -3,11 +3,6 @@ const DepartmentModel = require('../model/Department.js');
 const checkUserRole = require("../util/checkUserRole");
 router.prefix('/department');
 
-router.all('*', async (ctx, next) => {
-   console.log("我是router.all")
-    ctx.body = {msg: "我是router.all"}
-});
-
 router.get('/', async (ctx, next) => {
     console.log("我是router.get")
     let {account_id, page = 1} = ctx.query, result, total;
