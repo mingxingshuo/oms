@@ -7,7 +7,7 @@ function checkUserRole(id) {
             let {role} = user;
             resolve(role);
         } else {
-            reject({code: -1, msg: "没有查询到该账户的有关信息", status: 404})
+            reject({errcode: 404, msg: "没有查询到该账户的有关信息"})
         }
     })
 }

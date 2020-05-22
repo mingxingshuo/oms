@@ -30,20 +30,20 @@ app.use(views(__dirname + '/views', {
 
 app.use(userAgent());
 
-// app.use(async (ctx, next) => {
-//     let userId, account_id = ctx.query.account_id;
-//     if(account_id) {
-//         userId = account_id;
-//     } else {
-//         userId = ctx.request.body.account_id;
-//     }
-//     if(userId) {
-//         await next()
-//     } else {
-//         ctx.response.status = 401;
-//         ctx.body = {code: -1, msg: "登录信息失效，账户id缺失"}
-//     }
-// });
+app.use(async (ctx, next) => {
+    let userId, account_id = ctx.query.account_id;
+    if(account_id) {
+        userId = account_id;
+    } else {
+        userId = ctx.request.body.account_id;
+    }
+    if(userId) {
+        await next()
+    } else {
+        ctx.response.status = 401;
+        ctx.body = {code: -1, msg: "登录信息失效，账户id缺失"}
+    }
+});
 
 app.use(async(ctx, next) => {
     ctx.set('Access-Control-Allow-Headers', 'content-type,xfilecategory,xfilename,xfilesize,u_id,device_id,uid,deviceid,X-Requested-With');
