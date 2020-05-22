@@ -19,10 +19,11 @@ router.get('/', async (ctx, next) => {
                     ctx.body = {code: -1, msg: "该账户无操作权限"};
                 }
             })
-            // .catch(err => {
-            //     ctx.response.status = err.status;
-            //     ctx.body = err;
-            // });
+            .catch(err => {
+                console.loog(err, "err")
+                ctx.response.status = err.status;
+                ctx.body = err;
+            });
     } else {
         ctx.response.status = 401;
         ctx.body = {code: -1, msg: "登录信息失效，账户id缺失"}
