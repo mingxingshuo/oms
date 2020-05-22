@@ -31,6 +31,7 @@ app.use(views(__dirname + '/views', {
 app.use(userAgent());
 
 app.use(async (ctx, next) => {
+    console.log(ctx, "ctx")
     let userId, account_id = ctx.query.account_id;
     if(account_id) {
         userId = account_id;
