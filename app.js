@@ -30,6 +30,17 @@ app.use(views(__dirname + '/views', {
 
 app.use(userAgent());
 
+app.use(async(ctx, next) => {
+    ctx.set('Access-Control-Allow-Headers', 'content-type,xfilecategory,xfilename,xfilesize,u_id,device_id,uid,deviceid,X-Requested-With');
+    ctx.set('Access-Control-Allow-Origin', '*');
+    ctx.set('Access-Control-Allow-Credentials', 'true');
+    ctx.set('Access-Control-Allow-Methods', 'PUT,DELETE,POST,GET,OPTIONS');
+    if (ctx.request.method === "OPTIONS") {
+        ctx.response.status = 200
+    }
+    await next();
+});
+
 app.use('*', async (ctx, next) => {
     console.log("我是app.all")
     let userId, account_id = ctx.query.account_id;
@@ -47,19 +58,6 @@ app.use('*', async (ctx, next) => {
         ctx.body = {code: -1, msg: "登录信息失效，账户id缺失"}
     }
 });
-
-
-app.use(async(ctx, next) => {
-    ctx.set('Access-Control-Allow-Headers', 'content-type,xfilecategory,xfilename,xfilesize,u_id,device_id,uid,deviceid,X-Requested-With');
-    ctx.set('Access-Control-Allow-Origin', '*');
-    ctx.set('Access-Control-Allow-Credentials', 'true');
-    ctx.set('Access-Control-Allow-Methods', 'PUT,DELETE,POST,GET,OPTIONS');
-    if (ctx.request.method === "OPTIONS") {
-        ctx.response.status = 200
-    }
-    await next();
-});
-
 
 // routes
 app.use(index.routes(), index.allowedMethods());
