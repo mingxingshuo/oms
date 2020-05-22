@@ -12,8 +12,9 @@ router.get('/', async (ctx, next) => {
                 if (role === 0) {
                     result = await DepartmentModel.find({parentId: account_id}).skip((page - 1) * 10).limit(10);
                     total = await DepartmentModel.estimatedDocumentCount({parentId: account_id});
-                    await ctx.response.status = 200;
-                    await ctx.body = {code: 1, msg: "查询成功", data: result, total};
+                    ctx.response.status = 200;
+                    ctx.body = {code: 1, msg: "查询成功", data: result, total};
+                    console.log(ctx.body)
                 } else {
                     ctx.response.status = 403;
                     ctx.body = {code: -1, msg: "该账户无操作权限"};
