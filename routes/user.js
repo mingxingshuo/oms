@@ -37,7 +37,7 @@ router.post('/', async (ctx, next) => {
     } else {
         await checkUserRole(account_id)
             .then(async userRole => {
-                if(userRole === 9999999999 || user.role < role) {
+                if(userRole === 9999999999 || userRole < role) {
                     let data = await UserModel.create({username, nickName, password, role, remarks, power, parentId: account_id});
                     if (data) {
                         ctx.body = {code: 1, msg: '账户创建成功', data}
