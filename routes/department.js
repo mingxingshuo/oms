@@ -12,7 +12,7 @@ router.get('/', async (ctx, next) => {
                 console.log(role, "role")
                 if (role === 0) {
                     result = await DepartmentModel.find({parentId: account_id}).skip((page - 1) * 10).limit(10);
-                    total = await DepartmentModel.count({parentId: account_id});
+                    total = await DepartmentModel.estimatedDocumentCount({parentId: account_id});
                     ctx.body = {code: 1, msg: "查询成功", data: result, total};
                 } else {
                     ctx.response.status = 403;
