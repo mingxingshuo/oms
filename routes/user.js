@@ -1,27 +1,27 @@
 const router = require('koa-router')();
 const UserModel = require('../model/User.js');
-const md5 = require('../util/encryptByMD5');
-const salt = "QE4CwVWGy1lBBIW5uoYFsZEwfyI7ScuU";
 const routers = require('../conf/router');
 const checkHasAccountId = require("../util/checkHasAccountId");
+const checkUserRole = require("../util/checkUserRole");
+
+const salt = "QE4CwVWGy1lBBIW5uoYFsZEwfyI7ScuU";
+const md5 = require('../util/encryptByMD5');
 
 router.prefix('/user');
 
 router.all("*", async (ctx, next) => {
-    console.log(ctx, "ctx user")
     await checkHasAccountId(ctx, next);
 });
 
 router.post('/login', async (ctx, next) => {
     let {username, password} = ctx.request.body;
     let result = await UserModel.findOne({username});
-    console.log(result, "result")
     if (result && result._id && md5(md5(result.password + salt)) === password) {
         result.loginAt = Date.now();
         await result.save();
         result = result.toObject();
         const {role} = result;
-        result.role = role === 9999999999 ? "后台管理员账号" : role === 0 ? "主账号" : role === 1 ? "管理账号" : "销售账号"
+        result.role = role === 9999999999 ? "后台管理员账号" : role === 0 ? "主账号" : role === 1 ? "管理账号" : "销售账号";
         delete result.password;
         ctx.body = {code: 1, msg: '登录成功', data: result, routers: routers[role.toString()]}
     } else {
@@ -31,59 +31,105 @@ router.post('/login', async (ctx, next) => {
 
 router.post('/', async (ctx, next) => {
     let {account_id, username, password, role, remarks, nickName, power} = ctx.request.body;
-    let result = await UserModel.find({username});
+    let result = await UserModel.find({username, parentId: account_id});
     if (result.length > 0) {
         ctx.body = {code: 2, msg: "该账户名已存在，请检查输入是否有误"}
     } else {
-        if(account_id) {
-            let user = await UserModel.findById(account_id);
-            if(user.role === 9999999999 || user.role < role) {
-                let data = await UserModel.create({username, nickName, password, role, remarks, power, parentId: account_id});
-                if (data) {
-                    ctx.body = {code: 1, msg: '账户创建成功', data}
+        await checkUserRole(account_id)
+            .then(async userRole => {
+                if(userRole === 9999999999 || user.role < role) {
+                    let data = await UserModel.create({username, nickName, password, role, remarks, power, parentId: account_id});
+                    if (data) {
+                        ctx.body = {code: 1, msg: '账户创建成功', data}
+                    } else {
+                        ctx.response.status = 400;
+                        ctx.body = {code: -1, msg: '账户创建失败，请重试'}
+                    }
                 } else {
-                    ctx.response.status = 400;
-                    ctx.body = {code: -1, msg: '账户创建失败，请重试'}
+                    ctx.response.status = 403;
+                    ctx.body = {code: -1, msg: '没有权限操作，拒绝访问'}
                 }
-            } else {
-                ctx.response.status = 403;
-                ctx.body = {code: -1, msg: '没有权限操作，拒绝访问'}
-            }
-        } else {
-            ctx.response.status = 401;
-            ctx.body = {code: -1, msg: '登录信息失效，请重新登录'}
-        }
+            })
+            .catch(err => {
+                ctx.response.status = err.status;
+                ctx.body = err;
+            });
     }
 });
 
 router.get('/', async (ctx, next) => {
     let {account_id, username, page = 1} = ctx.query, result, total;
-    if (username && account_id) {
-        result = await UserModel.find({username: {$regex: new RegExp(username)}, parentId: account_id}).skip((page - 1) * 10).limit(10);
-        total = await UserModel.count({username: {$regex: new RegExp(username)}, parentId: account_id});
-        ctx.body = {code: 1, msg: '查询成功', data: result, total}
-    } else if (account_id) {
-        result = await UserModel.find({parentId: account_id}).skip((page - 1) * 10).limit(10);
-        total = await UserModel.count({parentId: account_id});
-        ctx.body = {code: 1, msg: "查询成功", data: result, total};
-    } else {
-        ctx.response.status = 401;
-        ctx.body = {code: -1, msg: "登录信息失效，账户id缺失"}
-    }
+    await checkUserRole(account_id)
+        .then(async role => {
+            if(role === 0 || role === 9999999999) {
+                if (username) {
+                    result = await UserModel.find({username: {$regex: new RegExp(username)}, parentId: account_id}).skip((page - 1) * 10).limit(10);
+                    total = await UserModel.estimatedDocumentCount({username: {$regex: new RegExp(username)}, parentId: account_id});
+                    ctx.body = {code: 1, msg: '查询成功', data: result, total}
+                } else {
+                    result = await UserModel.find({parentId: account_id}).skip((page - 1) * 10).limit(10);
+                    total = await UserModel.estimatedDocumentCount({parentId: account_id});
+                    ctx.body = {code: 1, msg: "查询成功", data: result, total};
+                }
+            } else {
+                ctx.response.status = 403;
+                ctx.body = {code: -1, msg: '该账户无操作权限'}
+            }
+        })
+        .catch(err => {
+            ctx.response.status = err.status;
+            ctx.body = err;
+        });
 });
 
-router.put('/power', async (ctx, next) => {
-    let {id, power} = ctx.request.body;
-    let updateAt = Date.now();
-    let data = await UserModel.findByIdAndUpdate(id, {power, updateAt}, {new: true});
-    if (data) {
-        ctx.body = {code: 1, msg: '权限修改成功', data}
-    } else {
-        ctx.response.status = 400;
-        ctx.body = {code: -1, msg: '权限修改失败，请重试'}
-    }
+router.put('/', async (ctx, next) => {
+    let {id, username, password, remarks, account_id} = ctx.request.body;
+    await checkUserRole(account_id)
+        .then(async role => {
+            if(role !== 1) {
+                let updateAt = Date.now();
+                let data = await UserModel.findByIdAndUpdate(id, {username, password, remarks, updateAt}, {new: true});
+                if (data) {
+                    ctx.body = {code: 1, msg: '用户信息修改成功', data}
+                } else {
+                    ctx.response.status = 400;
+                    ctx.body = {code: -1, msg: '用户信息修改失败，请检查输入是否有误'}
+                }
+            } else {
+                ctx.response.status = 403;
+                ctx.body = {code: -1, msg: '该账户无操作权限'}
+            }
+        })
+        .catch(err => {
+            ctx.response.status = err.status;
+            ctx.body = err;
+        });
 });
 
+router.delete('/', async (ctx, next) => {
+    let {_id, account_id} = ctx.query;
+    await checkUserRole(account_id)
+        .then(async role => {
+            if(role === 0 || role === 9999999999) {
+                let result = await UserModel.findByIdAndRemove(_id);
+                if (result) {
+                    ctx.body = {code: 1, msg: '删除成功'}
+                } else {
+                    ctx.response.status = 400;
+                    ctx.body = {code: -1, msg: "删除失败"}
+                }
+            } else {
+                ctx.response.status = 403;
+                ctx.body = {code: -1, msg: '该账户无操作权限'}
+            }
+        })
+        .catch(err => {
+            ctx.response.status = err.status;
+            ctx.body = err;
+        });
+});
+
+// 测试接口 =========================== 后期删除
 // 修改用户权限为 后台管理员
 router.get('/role', async (ctx, next) => {
     let {id} = ctx.query;
@@ -97,41 +143,7 @@ router.get('/role', async (ctx, next) => {
     }
 });
 
-router.put('/remarks', async (ctx, next) => {
-    let {id, remarks} = ctx.request.body;
-    let updateAt = Date.now();
-    let data = await UserModel.findByIdAndUpdate(id, {remarks, updateAt}, {new: true});
-    if (data) {
-        ctx.body = {code: 1, msg: '备注修改成功', data}
-    } else {
-        ctx.response.status = 400;
-        ctx.body = {code: -1, msg: '备注修改失败，请重试'}
-    }
-});
-
-router.put('/', async (ctx, next) => {
-    let {id, username, password} = ctx.request.body;
-    let updateAt = Date.now();
-    let data = await UserModel.findByIdAndUpdate(id, {username, password, updateAt}, {new: true});
-    if (data) {
-        ctx.body = {code: 1, msg: '密码修改成功', data}
-    } else {
-        ctx.response.status = 400;
-        ctx.body = {code: -1, msg: '密码修改失败，请重试'}
-    }
-});
-
-router.delete('/', async (ctx, next) => {
-    let {_id} = ctx.query;
-    let result = await UserModel.findByIdAndRemove(_id);
-    if (result) {
-        ctx.body = {code: 1, msg: '删除成功'}
-    } else {
-        ctx.response.status = 400;
-        ctx.body = {code: -1, msg: "删除失败"}
-    }
-});
-
+// 查询所有用户
 router.get('/all', async (ctx, next) => {
     let result = await UserModel.find();
     if (result.length) {
@@ -142,6 +154,7 @@ router.get('/all', async (ctx, next) => {
     }
 });
 
+// 修改父级
 router.get('/updateParent', async (ctx, next) => {
    let {id} = ctx.query;
    let result = await UserModel.findByIdAndUpdate(id, {parentId: "5ec640687b0b607e83979798"}, {new: true});
@@ -152,6 +165,7 @@ router.get('/updateParent', async (ctx, next) => {
    }
 });
 
+// 按照权限删除数据
 router.get('/deleteRole', async (ctx, next) => {
     let {role} = ctx.query;
     let result = await UserModel.remove({role});
@@ -162,17 +176,5 @@ router.get('/deleteRole', async (ctx, next) => {
         ctx.body = {code: -1, msg: "删除失败"}
     }
 });
-
-function checkUserRole(id) {
-    return new Promise(async (resolve, reject) => {
-        let user = await UserModel.findById(account_id);
-        if (user) {
-            let {role} = user;
-            resolve(role);
-        } else {
-            reject({code: -1, msg: "没有查询到该账户的有关信息", status: 404})
-        }
-    })
-}
 
 module.exports = router;

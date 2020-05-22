@@ -6,7 +6,6 @@ const checkUserRole = require("../util/checkUserRole");
 router.prefix('/department');
 
 router.all("*", async (ctx, next) => {
-    console.log(ctx, "ctx department")
     await checkHasAccountId(ctx, next);
 });
 

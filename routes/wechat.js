@@ -5,7 +5,6 @@ const checkUserRole = require("../util/checkUserRole");
 router.prefix('/wechat');
 
 router.all("*", async (ctx, next) => {
-    console.log(ctx, "ctx wechat")
     await checkHasAccountId(ctx, next);
 });
 
@@ -15,11 +14,11 @@ router.get('/', async (ctx, next) => {
         .then(async role => {
             if (role === 0) {
                 result = await WechatModel.find({parentId: account_id}).skip((page - 1) * 10).limit(10);
-                total = await WechatModel.count({parentId: account_id});
+                total = await WechatModel.estimatedDocumentCount({parentId: account_id});
                 ctx.body = {code: 1, msg: "查询成功", data: result, total};
             } else if(role === 2) {
                 result = await WechatModel.find({userId: account_id}).skip((page - 1) * 10).limit(10);
-                total = await WechatModel.count({userId: account_id});
+                total = await WechatModel.estimatedDocumentCount({userId: account_id});
                 ctx.body = {code: 1, msg: "查询成功", data: result, total};
             } else {
                 ctx.response.status = 403;

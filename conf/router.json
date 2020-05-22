@@ -61,39 +61,14 @@
     ],
     "1": [
         {
-            "icon": "iconusers",
-            "keyIndex": "user",
-            "role": 0,
-            "subMenuList": [
-                {
-                    "keyIndex": "manage",
-                    "title": "账户列表",
-                    "path": "/admin/user/manage"
-                },
-                {
-                    "keyIndex": "add",
-                    "title": "新增用户",
-                    "path": "/admin/user/add"
-                }
-            ],
-            "title": "账户管理"
-        }, {
             "keyIndex": "sales",
             "title": "销售专区",
             "icon": "iconorder",
             "subMenuList": [
                 {
-                    "keyIndex": "wechat",
-                    "title": "微信号",
-                    "path": "/admin/sales/wechat/list"
-                }, {
                     "keyIndex": "order",
                     "title": "订单列表",
                     "path": "/admin/sales/order/list"
-                }, {
-                    "keyIndex": "customer",
-                    "title": "客户列表",
-                    "path": "/admin/sales/customer/list"
                 }
             ]
         }
@@ -105,6 +80,10 @@
             "icon": "iconorder",
             "subMenuList": [
                 {
+                    "keyIndex": "wechat",
+                    "title": "我的微信号",
+                    "path": "/admin/sales/wechat/list"
+                }, {
                     "keyIndex": "order",
                     "title": "我的订单",
                     "path": "/admin/sales/order/list"
