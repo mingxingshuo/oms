@@ -20,8 +20,8 @@ onerror(app);
 // middlewares
 app.use(bodyparser());
 app.use(json());
-app.use(require('koa-static')(__dirname + '/public'), {maxAge: 1000 * 60 * 60})
-app.use(require('koa-static')(__dirname + '/build'), {maxAge: 1000 * 60 * 60})
+app.use(require('koa-static')(__dirname + '/public'), {maxAge: 1000 * 60 * 60});
+app.use(require('koa-static')(__dirname + '/build'), {maxAge: 1000 * 60 * 60});
 
 app.use(views(__dirname + '/views', {
     extension: 'ejs'
@@ -31,7 +31,6 @@ app.use(views(__dirname + '/views', {
 app.use(userAgent());
 
 app.use(async (ctx, next) => {
-    console.log(ctx, "ctx")
     let userId, account_id = ctx.query.account_id;
     if(account_id) {
         userId = account_id;
