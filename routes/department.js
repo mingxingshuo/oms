@@ -7,7 +7,7 @@ router.get('/', async (ctx, next) => {
     console.log("我是router.get")
     let {account_id, page = 1} = ctx.query, result, total;
     if (account_id) {
-        let role = checkUserRole(account_id);
+        let role = await checkUserRole(account_id);
         if(role === 0) {
             result = await DepartmentModel.find({parentId: account_id}).skip((page - 1) * 10).limit(10);
             total = await DepartmentModel.estimatedDocumentCount({parentId: account_id});
