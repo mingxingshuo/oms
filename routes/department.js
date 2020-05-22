@@ -1,7 +1,14 @@
 const router = require('koa-router')();
 const DepartmentModel = require('../model/Department.js');
+const checkHasAccountId = require("../util/checkHasAccountId");
 const checkUserRole = require("../util/checkUserRole");
+
 router.prefix('/department');
+
+router.all("*", async (ctx, next) => {
+    console.log(ctx, "ctx department")
+    await checkHasAccountId(ctx, next);
+});
 
 router.get('/', async (ctx, next) => {
     let {account_id, page = 1} = ctx.query, result, total;

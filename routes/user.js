@@ -3,7 +3,14 @@ const UserModel = require('../model/User.js');
 const md5 = require('../util/encryptByMD5');
 const salt = "QE4CwVWGy1lBBIW5uoYFsZEwfyI7ScuU";
 const routers = require('../conf/router');
+const checkHasAccountId = require("../util/checkHasAccountId");
+
 router.prefix('/user');
+
+router.all("*", async (ctx, next) => {
+    console.log(ctx, "ctx user")
+    await checkHasAccountId(ctx, next);
+});
 
 router.post('/login', async (ctx, next) => {
     let {username, password} = ctx.request.body;

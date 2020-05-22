@@ -1,7 +1,13 @@
 const router = require('koa-router')();
 const WechatModel = require('../model/Wechat.js');
+const checkHasAccountId = require("../util/checkHasAccountId");
 const checkUserRole = require("../util/checkUserRole");
 router.prefix('/wechat');
+
+router.all("*", async (ctx, next) => {
+    console.log(ctx, "ctx wechat")
+    await checkHasAccountId(ctx, next);
+});
 
 router.get('/', async (ctx, next) => {
     let {account_id, page = 1} = ctx.query, result, total;
