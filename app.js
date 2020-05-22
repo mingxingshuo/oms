@@ -38,7 +38,7 @@ app.use(async (ctx, next) => {
     } else {
         userId = ctx.request.body.account_id;
     }
-    if(userId) {
+    if(userId || ctx.request.url === "/user/login") {
         await next()
     } else {
         ctx.response.status = 401;
