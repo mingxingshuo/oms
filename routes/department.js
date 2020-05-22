@@ -9,6 +9,7 @@ router.get('/', async (ctx, next) => {
     if (account_id) {
         checkUserRole(account_id)
             .then(async role => {
+                console.log(role, "role")
                 if (role === 0) {
                     result = await DepartmentModel.find({parentId: account_id}).skip((page - 1) * 10).limit(10);
                     total = await DepartmentModel.count({parentId: account_id});
