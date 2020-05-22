@@ -9,12 +9,16 @@ router.get('/', async (ctx, next) => {
     if (account_id) {
         checkUserRole(account_id)
             .then(async role => {
-                console.log(role, "role")
                 if (role === 0) {
+                    console.log(role, "role")
                     result = await DepartmentModel.find({parentId: account_id}).skip((page - 1) * 10).limit(10);
+                    console.log(role, "role0")
                     total = await DepartmentModel.estimatedDocumentCount({parentId: account_id});
+                    console.log(role, "role1")
                     ctx.body = {code: 1, msg: "查询成功", data: result, total};
+                    console.log(role, "role2")
                 } else {
+                    console.log("11111", "role")
                     ctx.response.status = 403;
                     ctx.body = {code: -1, msg: "该账户无操作权限"};
                 }
