@@ -7,8 +7,6 @@ const bodyparser = require('koa-bodyparser');
 const logger = require('koa-logger');
 const userAgent = require('koa2-useragent');
 
-const checkUserRole = require("../util/checkUserRole");
-
 const index = require('./routes/index');
 const user = require('./routes/user');
 const order = require('./routes/order');
