@@ -33,6 +33,7 @@ router.get('/', async (ctx, next) => {
         ctx.response.status = 401;
         ctx.body = {code: -1, msg: "登录信息失效，账户id缺失"}
     }
+    await next()
 });
 
 router.post('/', async (ctx, next) => {
