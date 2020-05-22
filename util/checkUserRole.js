@@ -11,3 +11,5 @@ function checkUserRole(id) {
         }
     })
 }
+
+module.exports = checkUserRole;
