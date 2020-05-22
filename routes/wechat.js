@@ -60,15 +60,52 @@ router.post('/', async (ctx, next) => {
 });
 
 router.put('/', async (ctx, next) => {
-    let {wechatId, nickName, remarks, _id} = ctx.request.body;
-    let updateAt = Date.now();
-    let data = await WechatModel.findByIdAndUpdate(_id, {wechatId, nickName, remarks, updateAt}, {new: true});
-    if (data) {
-        ctx.body = {code: 1, msg: '修改成功', data}
-    } else {
-        ctx.response.status = 400;
-        ctx.body = {code: -1, msg: '修改失败，请检查输入是否有误'}
-    }
+    let {wechatId, nickName, remarks, _id, account_id} = ctx.request.body;
+    await checkUserRole(account_id)
+        .then(async role => {
+            if (role === 0) {
+                let updateAt = Date.now();
+                let data = await WechatModel.findByIdAndUpdate(_id, {wechatId, nickName, remarks, updateAt, parentId: account_id}, {new: true});
+                if (data) {
+                    ctx.body = {code: 1, msg: '修改成功', data}
+                } else {
+                    ctx.response.status = 400;
+                    ctx.body = {code: -1, msg: '修改失败，请检查输入是否有误'}
+                }
+            } else {
+                ctx.response.status = 403;
+                ctx.body = {code: -1, msg: "该账户无操作权限"}
+            }
+        })
+        .catch(err => {
+            ctx.response.status = err.status;
+            ctx.body = err;
+        });
+
+});
+
+router.put('/setUser', async (ctx, next) => {
+    let {userId, _ids, account_id} = ctx.request.body;
+    await checkUserRole(account_id)
+        .then(async role => {
+            if (role === 0) {
+                let updateAt = Date.now();
+                let data = await WechatModel.updateMany({_id: {$in: _ids}}, {userId, updateAt}, {new: true});
+                if (data) {
+                    ctx.body = {code: 1, msg: '修改成功', data}
+                } else {
+                    ctx.response.status = 400;
+                    ctx.body = {code: -1, msg: '修改失败，请检查输入是否有误'}
+                }
+            } else {
+                ctx.response.status = 403;
+                ctx.body = {code: -1, msg: "该账户无操作权限"}
+            }
+        })
+        .catch(err => {
+            ctx.response.status = err.status;
+            ctx.body = err;
+        });
 });
 
 router.delete('/', async (ctx, next) => {
