@@ -10,30 +10,25 @@ router.get('/', async (ctx, next) => {
         checkUserRole(account_id)
             .then(async role => {
                 if (role === 0) {
-                    console.log(role, "role")
                     result = await DepartmentModel.find({parentId: account_id}).skip((page - 1) * 10).limit(10);
-                    console.log(result, "result")
                     total = await DepartmentModel.estimatedDocumentCount({parentId: account_id});
-                    console.log(total, "total")
                     ctx.response.status = 200;
                     ctx.body = {code: 1, msg: "查询成功", data: result, total};
-                    console.log(ctx.body, "ctx.body")
+                    console.log(ctx)
                 } else {
-                    console.log("11111", "role")
                     ctx.response.status = 403;
                     ctx.body = {code: -1, msg: "该账户无操作权限"};
                 }
             })
             .catch(err => {
-                console.loog(err, "err")
+                console.log(err, "err")
                 ctx.response.status = err.status;
-                ctx.body = err;
+                // ctx.body = err;
             });
     } else {
         ctx.response.status = 401;
         ctx.body = {code: -1, msg: "登录信息失效，账户id缺失"}
     }
-    await next()
 });
 
 router.post('/', async (ctx, next) => {
