@@ -2,11 +2,25 @@ const router = require('koa-router')();
 const CustomerModel = require('../model/Customer.js');
 router.prefix('/customer');
 
-router.post('/', async(ctx, next) => {
-    let {account_id, nickName, wxId, wxName} = ctx.request.body;
-    let data = await CustomerModel.findOneAndUpdate({wxId: wxId}, {account_id, nickName, wxId, wxName}, {
-        upsert: true,
-        new: true
+router.post('/', async (ctx, next) => {
+    let {account_id, wechatId, wxId, sex, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, source, type, remark} = ctx.request.body;
+    let data = await CustomerModel.create({
+        account_id,
+        wechatId,
+        wxId,
+        sex,
+        d_contact,
+        d_tel,
+        d_mobile,
+        d_province,
+        d_city,
+        d_county,
+        d_address,
+        source,
+        type,
+        remark,
+        createAt: Date.now(),
+        updateAt: Date.now()
     });
     if (data) {
         ctx.body = {code: 1, msg: '用户创建成功', data}
@@ -16,7 +30,7 @@ router.post('/', async(ctx, next) => {
     }
 });
 
-router.get('/', async(ctx, next) => {
+router.get('/', async (ctx, next) => {
     let {page} = ctx.query, result, total;
     result = await CustomerModel.find().skip((page - 1) * 10).limit(10);
     total = await CustomerModel.count();
@@ -28,10 +42,25 @@ router.get('/', async(ctx, next) => {
     }
 });
 
-router.put('/', async(ctx, next) => {
-    let {_id, nickName, wxId, wxName} = ctx.request.body;
-    let updateAt = Date.now();
-    let data = await CustomerModel.findByIdAndUpdate(_id, {nickName, wxId, wxName}, {new: true});
+router.put('/', async (ctx, next) => {
+    let {account_id, wechatId, wxId, sex, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, source, type, remark} = ctx.request.body;
+    let data = await CustomerModel.findByIdAndUpdate(_id, {
+        account_id,
+        wechatId,
+        wxId,
+        sex,
+        d_contact,
+        d_tel,
+        d_mobile,
+        d_province,
+        d_city,
+        d_county,
+        d_address,
+        source,
+        type,
+        remark,
+        updateAt: Date.now()
+    }, {new: true});
     if (data) {
         ctx.body = {code: 1, msg: '修改成功', data}
     } else {
@@ -40,7 +69,7 @@ router.put('/', async(ctx, next) => {
     }
 });
 
-router.delete('/', async(ctx, next) => {
+router.delete('/', async (ctx, next) => {
     let {_id} = ctx.query;
     let result = await CustomerModel.findByIdAndRemove(_id);
     if (result) {

@@ -5,13 +5,23 @@ var db = mongoose.createConnection(connect_url);
 
 var CustomerSchema = new Schema({
     account_id: String,
-    wechatId:String,
-    nickName: String,
-    name: String,
-    j_contact: String,
-    remark: String,
+    wechatId: String,
+    wxId: [],
+    sex: Number,
+    d_contact: String,
+    d_tel: String,
+    d_mobile: String,
+    d_province: String,
+    d_city: String,
+    d_county: String,
+    d_address: String,
+    source: String,
     type: String,
     remark: String,
+    orderAt: {
+        type: Number,
+        default: Date.now()
+    },
     createAt: {
         type: Number,
         default: Date.now()
