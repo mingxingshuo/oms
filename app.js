@@ -13,6 +13,7 @@ const order = require('./routes/order');
 const customer = require('./routes/customer');
 const wechat = require('./routes/wechat');
 const department = require('./routes/department');
+const pay = require('./routes/pay');
 
 // error handler
 onerror(app);
@@ -48,6 +49,7 @@ app.use(order.routes(), order.allowedMethods());
 app.use(customer.routes(), customer.allowedMethods());
 app.use(wechat.routes(), wechat.allowedMethods());
 app.use(department.routes(), department.allowedMethods());
+app.use(pay.routes(), pay.allowedMethods());
 
 
 // error-handling

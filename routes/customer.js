@@ -23,10 +23,10 @@ router.post('/', async (ctx, next) => {
         updateAt: Date.now()
     });
     if (data) {
-        ctx.body = {code: 1, msg: '用户创建成功', data}
+        ctx.body = {code: 1, msg: '客户创建成功', data}
     } else {
         ctx.response.status = 400;
-        ctx.body = {code: -1, msg: '用户创建失败，请重试'}
+        ctx.body = {code: -1, msg: '客户创建失败，请重试'}
     }
 });
 

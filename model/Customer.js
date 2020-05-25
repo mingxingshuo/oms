@@ -16,12 +16,9 @@ var CustomerSchema = new Schema({
     d_county: String,
     d_address: String,
     source: String,
-    type: String,
+    type: Number,
     remark: String,
-    orderAt: {
-        type: Number,
-        default: Date.now()
-    },
+    orderAt: Number,
     createAt: {
         type: Number,
         default: Date.now()
