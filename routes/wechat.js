@@ -1,7 +1,8 @@
 const router = require('koa-router')();
 const WechatModel = require('../model/Wechat.js');
 const checkHasAccountId = require("../util/checkHasAccountId");
-const checkUserRole = require("../util/checkUserRole");
+const jwt = require("../util/jsonwebtoken");
+
 router.prefix('/wechat');
 
 router.all("*", async (ctx, next) => {
@@ -9,38 +10,36 @@ router.all("*", async (ctx, next) => {
 });
 
 router.get('/', async (ctx, next) => {
-    let {account_id, page = 1} = ctx.query, result, total;
-    await checkUserRole(account_id)
-        .then(async role => {
+    let {page = 1} = ctx.query, result, total;
+    let {token} = ctx.request.header;
+    await jwt.checkToken(token)
+        .then(async ({role, _id}) => {
             if (role === 0) {
-                result = await WechatModel.find({parentId: account_id}).skip((page - 1) * 10).limit(10);
-                total = await WechatModel.estimatedDocumentCount({parentId: account_id});
+                result = await WechatModel.find({parentId: _id}).skip((page - 1) * 10).limit(10);
+                total = await WechatModel.estimatedDocumentCount({parentId: _id});
                 ctx.body = {code: 1, msg: "查询成功", data: result, total};
-            } else if(role === 2) {
-                result = await WechatModel.find({userId: account_id}).skip((page - 1) * 10).limit(10);
-                total = await WechatModel.estimatedDocumentCount({userId: account_id});
+            } else if (role === 2) {
+                result = await WechatModel.find({userId: _id}).skip((page - 1) * 10).limit(10);
+                total = await WechatModel.estimatedDocumentCount({userId: _id});
                 ctx.body = {code: 1, msg: "查询成功", data: result, total};
             } else {
                 ctx.response.status = 403;
                 ctx.body = {code: -1, msg: "该账户无操作权限"}
             }
         })
-        .catch(err => {
-            ctx.response.status = err.status;
-            ctx.body = err;
-        });
 });
 
 router.post('/', async (ctx, next) => {
-    let {account_id, wechatId, nickName, remarks} = ctx.request.body;
-    let result = await WechatModel.find({wechatId, parentId: account_id});
+    let {wechatId, nickName, remarks} = ctx.request.body;
+    let result = await WechatModel.find({wechatId, parentId: _id});
     if (result.length > 0) {
         ctx.body = {code: 2, msg: "该微信号已存在，请添加新的微信号", data: result}
     } else {
-        await checkUserRole(account_id)
-            .then(async role => {
+        let {token} = ctx.request.header;
+        await jwt.checkToken(token)
+            .then(async ({role, _id}) => {
                 if (role === 0) {
-                    let data = await WechatModel.create({wechatId, nickName, remarks, parentId: account_id});
+                    let data = await WechatModel.create({wechatId, nickName, remarks, parentId: _id});
                     if (data) {
                         ctx.body = {code: 1, msg: '微信号添加成功', data}
                     } else {
@@ -52,20 +51,23 @@ router.post('/', async (ctx, next) => {
                     ctx.body = {code: -1, msg: "该账户无操作权限"}
                 }
             })
-            .catch(err => {
-                ctx.response.status = err.status;
-                ctx.body = err;
-            });
     }
 });
 
 router.put('/', async (ctx, next) => {
-    let {wechatId, nickName, remarks, _id, account_id} = ctx.request.body;
-    await checkUserRole(account_id)
-        .then(async role => {
+    let {wechatId, nickName, remarks, _id} = ctx.request.body;
+    let {token} = ctx.request.header;
+    await jwt.checkToken(token)
+        .then(async ({role, _id: account_id}) => {
             if (role === 0) {
                 let updateAt = Date.now();
-                let data = await WechatModel.findByIdAndUpdate(_id, {wechatId, nickName, remarks, updateAt, parentId: account_id}, {new: true});
+                let data = await WechatModel.findByIdAndUpdate(_id, {
+                    wechatId,
+                    nickName,
+                    remarks,
+                    updateAt,
+                    parentId: account_id
+                }, {new: true});
                 if (data) {
                     ctx.body = {code: 1, msg: '修改成功', data}
                 } else {
@@ -77,17 +79,13 @@ router.put('/', async (ctx, next) => {
                 ctx.body = {code: -1, msg: "该账户无操作权限"}
             }
         })
-        .catch(err => {
-            ctx.response.status = err.status;
-            ctx.body = err;
-        });
-
 });
 
 router.put('/setUser', async (ctx, next) => {
-    let {userId, userName, _ids, account_id} = ctx.request.body;
-    await checkUserRole(account_id)
-        .then(async role => {
+    let {userId, userName, _ids} = ctx.request.body;
+    let {token} = ctx.request.header;
+    await jwt.checkToken(token)
+        .then(async ({role}) => {
             if (role === 0) {
                 let updateAt = Date.now();
                 let data = await WechatModel.updateMany({_id: {$in: _ids}}, {userId, userName, updateAt}, {new: true});
@@ -102,21 +100,26 @@ router.put('/setUser', async (ctx, next) => {
                 ctx.body = {code: -1, msg: "该账户无操作权限"}
             }
         })
-        .catch(err => {
-            ctx.response.status = err.status;
-            ctx.body = err;
-        });
 });
 
 router.delete('/', async (ctx, next) => {
     let {_id} = ctx.query;
-    let result = await WechatModel.findByIdAndRemove(_id);
-    if (result) {
-        ctx.body = {code: 1, msg: '删除成功', data: result}
-    } else {
-        ctx.response.status = 400;
-        ctx.body = {code: -1, msg: "删除失败"}
-    }
+    let {token} = ctx.request.header;
+    await jwt.checkToken(token)
+        .then(async ({role}) => {
+            if (role === 0) {
+                let result = await WechatModel.findByIdAndRemove(_id);
+                if (result) {
+                    ctx.body = {code: 1, msg: '删除成功', data: result}
+                } else {
+                    ctx.response.status = 400;
+                    ctx.body = {code: -1, msg: "删除失败"}
+                }
+            } else {
+                ctx.response.status = 403;
+                ctx.body = {code: -1, msg: "该账户无操作权限"}
+            }
+        })
 });
 
 module.exports = router;
