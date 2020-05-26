@@ -12,6 +12,10 @@ var DepartmentSchema = new Schema({
         type: String,
         default: ""
     },
+    manageName: {         // 管理账号名称
+        type: String,
+        default: ""
+    },
     name: String,       // 部门名称
     isDelete: {         // 是否删除
         type: Number,
