@@ -85,12 +85,12 @@ router.put('/', async (ctx, next) => {
 });
 
 router.put('/setUser', async (ctx, next) => {
-    let {userId, _ids, account_id} = ctx.request.body;
+    let {userId, userName, _ids, account_id} = ctx.request.body;
     await checkUserRole(account_id)
         .then(async role => {
             if (role === 0) {
                 let updateAt = Date.now();
-                let data = await WechatModel.updateMany({_id: {$in: _ids}}, {userId, updateAt}, {new: true});
+                let data = await WechatModel.updateMany({_id: {$in: _ids}}, {userId, userName, updateAt}, {new: true});
                 if (data) {
                     ctx.body = {code: 1, msg: '修改成功', data}
                 } else {

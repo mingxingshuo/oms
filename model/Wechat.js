@@ -12,6 +12,10 @@ var WechatSchema = new Schema({
         type: String,
         default: ""
     },
+    userName: {               // 销售账号名称
+        type: String,
+        default: ""
+    },
     wechatId: String,
     nickName: String,   // 昵称
     remarks: String,    // 备注
