@@ -58,14 +58,17 @@ router.post('/', async (ctx, next) => {
 });
 
 router.get('/', async (ctx, next) => {
-    let {account_id, username, page = 1} = ctx.query, result, total;
+    let {account_id, username, role, page = 1} = ctx.query, result, total;
     await checkUserRole(account_id)
-        .then(async role => {
-            if(role === 0 || role === 9999999999) {
+        .then(async userRole => {
+            if(userRole === 0 || userRole === 9999999999) {
                 if (username) {
                     result = await UserModel.find({username: {$regex: new RegExp(username)}, parentId: account_id}).skip((page - 1) * 10).limit(10);
                     total = await UserModel.estimatedDocumentCount({username: {$regex: new RegExp(username)}, parentId: account_id});
                     ctx.body = {code: 1, msg: '查询成功', data: result, total}
+                } else if (role) {
+                    result = await UserModel.find({parentId: account_id, role});
+                    ctx.body = {code: 1, msg: "查询成功", data: result};
                 } else {
                     result = await UserModel.find({parentId: account_id}).skip((page - 1) * 10).limit(10);
                     total = await UserModel.estimatedDocumentCount({parentId: account_id});
