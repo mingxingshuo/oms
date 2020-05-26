@@ -52,6 +52,8 @@ var OrderSchema = new Schema({
     orderStateDesc: String,
     Cargo: Array,
     AddedService: Array,
+    isReview: {type: Number, default: 0}, //0未审核，1已审核
+    isSub: {type: Number, default: 0}, //0未下单，1已下单
     createAt: {
         type: Number,
         default: Date.now()

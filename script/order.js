@@ -1,15 +1,17 @@
 const schedule = require("node-schedule");
 const ReviewOrderModel = require('../model/reviewOrder');
+const OrderModel = require('../model/Order');
 const md5 = require('../util/shunfengMD5');
 const request = require('request')
 
 async function orders() {
-    let orders = await ReviewOrderModel.find({isError:1})
+    let orders = await ReviewOrderModel.find({isError: 1})
     for (let order of orders) {
         let result = await submit(order)
         if (result.type == 2) {
             await ReviewOrderModel.findByIdAndUpdate(order._id, {isError: 2, errorMsg: result.data})
         } else {
+            await OrderModel.findOneAndUpdate({orderid: order.orderid}, {isSub: 1})
             await ReviewOrderModel.findByIdAndRemove(order._id)
         }
     }
