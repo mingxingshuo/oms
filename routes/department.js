@@ -29,7 +29,7 @@ router.post('/', async (ctx, next) => {
         .then(async ({role, _id}) => {
             let result = await DepartmentModel.find({name, parentId: _id});
             if (result.length > 0) {
-                ctx.body = {code: 2, msg: "该账户名已存在，请检查输入是否有误"}
+                ctx.body = {code: 2, msg: "该账户名已存在或曾经使用过，请创建一个新的"}
             } else {
                 if (role === 0) {
                     let data = await DepartmentModel.create({name, parentId: _id});
@@ -68,12 +68,12 @@ router.put('/', async (ctx, next) => {
 });
 
 router.put('/setManage', async (ctx, next) => {
-    let {body: {id, manageId}, header: {token}} = ctx.request;
+    let {body: {id, manageId, manageName}, header: {token}} = ctx.request;
     await jwt.checkToken(token)
         .then(async ({role, _id}) => {
             if (role === 0) {
                 let updateAt = Date.now();
-                let data = await DepartmentModel.findByIdAndUpdate(id, {manageId, updateAt}, {new: true});
+                let data = await DepartmentModel.findByIdAndUpdate(id, {manageId, manageName, updateAt}, {new: true});
                 if (data) {
                     ctx.body = {code: 1, msg: '管理员设置成功', data}
                 } else {
