@@ -72,7 +72,7 @@ router.get('/', async (ctx, next) => {
                     result = await UserModel.find({
                         username: {$regex: new RegExp(username)},
                         parentId: userInfo._id
-                    }).skip((page - 1) * 10).limit(10);
+                    }).skip((page - 1) * 10).limit(10).sort({role: -1, _id: -1});
                     total = await UserModel.estimatedDocumentCount({
                         username: {$regex: new RegExp(username)},
                         parentId: userInfo._id
