@@ -19,7 +19,11 @@ var UserSchema = new Schema({
         default: 2
     },
     remarks : String,    // 备注
-    department: {        // 部门
+    departmentId: {        // 部门
+        type: String,
+        default: ""
+    },
+    departmentName: {        // 部门
         type: String,
         default: ""
     },

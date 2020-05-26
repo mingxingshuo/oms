@@ -114,6 +114,28 @@ router.put('/', async (ctx, next) => {
         })
 });
 
+
+router.put('/setDepartment', async (ctx, next) => {
+    let {departmentId, departmentName, _ids} = ctx.request.body;
+    let {token} = ctx.request.header;
+    await jwt.checkToken(token)
+        .then(async ({role}) => {
+            if (role === 0) {
+                let updateAt = Date.now();
+                let data = await UserModel.updateMany({_id: {$in: _ids}}, {departmentId, departmentName, updateAt}, {new: true});
+                if (data) {
+                    ctx.body = {code: 1, msg: '修改成功', data}
+                } else {
+                    ctx.response.status = 400;
+                    ctx.body = {code: -1, msg: '修改失败，请检查输入是否有误'}
+                }
+            } else {
+                ctx.response.status = 403;
+                ctx.body = {code: -1, msg: "该账户无操作权限"}
+            }
+        })
+});
+
 router.delete('/', async (ctx, next) => {
     let {_id} = ctx.query;
     let {token} = ctx.request.header;
