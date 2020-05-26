@@ -1,5 +1,6 @@
 const router = require('koa-router')();
 const DepartmentModel = require('../model/Department.js');
+const UserModal = require('../model/User.js');
 const checkHasAccountId = require("../util/checkHasAccountId");
 const jwt = require("../util/jsonwebtoken");
 
@@ -50,7 +51,7 @@ router.post('/', async (ctx, next) => {
 router.put('/', async (ctx, next) => {
     let {body: {id, name}, header: {token}} = ctx.request;
     await jwt.checkToken(token)
-        .then(async ({role, _id}) => {
+        .then(async ({role}) => {
             if (role === 0) {
                 let updateAt = Date.now();
                 let data = await DepartmentModel.findByIdAndUpdate(id, {name, updateAt}, {new: true});
@@ -68,13 +69,15 @@ router.put('/', async (ctx, next) => {
 });
 
 router.put('/setManage', async (ctx, next) => {
-    let {body: {id, manageId, manageName}, header: {token}} = ctx.request;
+    let {body: {id, manageId, manageName, oldManageId = ""}, header: {token}} = ctx.request;
     await jwt.checkToken(token)
-        .then(async ({role, _id}) => {
+        .then(async ({role}) => {
             if (role === 0) {
                 let updateAt = Date.now();
                 let data = await DepartmentModel.findByIdAndUpdate(id, {manageId, manageName, updateAt}, {new: true});
                 if (data) {
+                    await UserModal.findByIdAndUpdate(manageId, {role: 1});
+                    await UserModal.findByIdAndUpdate(oldManageId, {role: 2});
                     ctx.body = {code: 1, msg: '管理员设置成功', data}
                 } else {
                     ctx.response.status = 400;
