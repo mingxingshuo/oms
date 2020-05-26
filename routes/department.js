@@ -56,6 +56,7 @@ router.put('/', async (ctx, next) => {
                 let updateAt = Date.now();
                 let data = await DepartmentModel.findByIdAndUpdate(id, {name, updateAt}, {new: true});
                 if (data) {
+                    await UserModal.updateMany({departmentId: id}, {departmentName: name});
                     ctx.body = {code: 1, msg: '部门信息修改成功', data}
                 } else {
                     ctx.response.status = 400;
