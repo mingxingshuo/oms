@@ -25,6 +25,7 @@
             "icon": "iconusers",
             "keyIndex": "user",
             "role": 0,
+            "title": "账户管理",
             "subMenuList": [
                 {
                     "keyIndex": "manage",
@@ -35,9 +36,13 @@
                     "keyIndex": "add",
                     "title": "新增用户",
                     "path": "/admin/user/add"
+                },
+                {
+                    "keyIndex": "department",
+                    "title": "部门列表",
+                    "path": "/admin/user/department"
                 }
-            ],
-            "title": "账户管理"
+            ]
         }, {
             "keyIndex": "sales",
             "title": "销售专区",
