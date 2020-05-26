@@ -24,7 +24,7 @@ router.get('/', async (ctx, next) => {
 });
 
 router.post('/', async (ctx, next) => {
-    let {body: {name}, header: {token}} = ctx.request.body;
+    let {body: {name}, header: {token}} = ctx.request;
     await jwt.checkToken(token)
         .then(async ({role, _id}) => {
             let result = await DepartmentModel.find({name, parentId: _id});
@@ -48,7 +48,7 @@ router.post('/', async (ctx, next) => {
 });
 
 router.put('/', async (ctx, next) => {
-    let {body: {id, name}, header: {token}} = ctx.request.body;
+    let {body: {id, name}, header: {token}} = ctx.request;
     await jwt.checkToken(token)
         .then(async ({role, _id}) => {
             if (role === 0) {
@@ -68,7 +68,7 @@ router.put('/', async (ctx, next) => {
 });
 
 router.put('/setManage', async (ctx, next) => {
-    let {body: {id, manageId}, header: {token}} = ctx.request.body;
+    let {body: {id, manageId}, header: {token}} = ctx.request;
     await jwt.checkToken(token)
         .then(async ({role, _id}) => {
             if (role === 0) {

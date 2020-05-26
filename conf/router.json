@@ -10,11 +10,6 @@
                     "keyIndex": "manage",
                     "title": "账户列表",
                     "path": "/admin/user/manage"
-                },
-                {
-                    "keyIndex": "add",
-                    "title": "新增用户",
-                    "path": "/admin/user/add"
                 }
             ],
             "title": "账户管理"
@@ -31,11 +26,6 @@
                     "keyIndex": "manage",
                     "title": "账户列表",
                     "path": "/admin/user/manage"
-                },
-                {
-                    "keyIndex": "add",
-                    "title": "新增用户",
-                    "path": "/admin/user/add"
                 },
                 {
                     "keyIndex": "department",
