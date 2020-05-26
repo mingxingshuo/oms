@@ -10,15 +10,12 @@ router.all("*", async (ctx, next) => {
 });
 
 router.get('/', async (ctx, next) => {
-    let {account_id, page = 1} = ctx.query, result, total;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async ({role}) => {
+        .then(async ({role, _id}) => {
             if (role === 0) {
-                result = await DepartmentModel.find({parentId: account_id, isDelete: 0}).skip((page - 1) * 10).limit(10);
-                total = await DepartmentModel.estimatedDocumentCount({parentId: account_id, isDelete: 0});
-                ctx.response.status = 200;
-                ctx.body = {code: 1, msg: "查询成功", data: result, total};
+                let result = await DepartmentModel.find({parentId: _id, isDelete: 0});
+                ctx.body = {code: 1, msg: "查询成功", data: result};
             } else {
                 ctx.response.status = 403;
                 ctx.body = {code: -1, msg: "该账户无操作权限"};
@@ -27,16 +24,15 @@ router.get('/', async (ctx, next) => {
 });
 
 router.post('/', async (ctx, next) => {
-    let {account_id, name} = ctx.request.body;
-    let result = await DepartmentModel.find({name, parentId: account_id});
-    if (result.length > 0) {
-        ctx.body = {code: 2, msg: "该账户名已存在，请检查输入是否有误"}
-    } else {
-        let {token} = ctx.request.header;
-        await jwt.checkToken(token)
-            .then(async ({role}) => {
+    let {body: {name}, header: {token}} = ctx.request.body;
+    await jwt.checkToken(token)
+        .then(async ({role, _id}) => {
+            let result = await DepartmentModel.find({name, parentId: _id});
+            if (result.length > 0) {
+                ctx.body = {code: 2, msg: "该账户名已存在，请检查输入是否有误"}
+            } else {
                 if (role === 0) {
-                    let data = await DepartmentModel.create({name, parentId: account_id});
+                    let data = await DepartmentModel.create({name, parentId: _id});
                     if (data) {
                         ctx.body = {code: 1, msg: '部门添加成功', data}
                     } else {
@@ -47,15 +43,14 @@ router.post('/', async (ctx, next) => {
                     ctx.response.status = 403;
                     ctx.body = {code: -1, msg: "该账户无操作权限"};
                 }
-            })
-    }
+            }
+        })
 });
 
 router.put('/', async (ctx, next) => {
-    let {id, name} = ctx.request.body;
-    let {token} = ctx.request.header;
+    let {body: {id, name}, header: {token}} = ctx.request.body;
     await jwt.checkToken(token)
-        .then(async ({role}) => {
+        .then(async ({role, _id}) => {
             if (role === 0) {
                 let updateAt = Date.now();
                 let data = await DepartmentModel.findByIdAndUpdate(id, {name, updateAt}, {new: true});
@@ -73,10 +68,9 @@ router.put('/', async (ctx, next) => {
 });
 
 router.put('/setManage', async (ctx, next) => {
-    let {id, manageId} = ctx.request.body;
-    let {token} = ctx.request.header;
+    let {body: {id, manageId}, header: {token}} = ctx.request.body;
     await jwt.checkToken(token)
-        .then(async ({role}) => {
+        .then(async ({role, _id}) => {
             if (role === 0) {
                 let updateAt = Date.now();
                 let data = await DepartmentModel.findByIdAndUpdate(id, {manageId, updateAt}, {new: true});
@@ -94,8 +88,8 @@ router.put('/setManage', async (ctx, next) => {
 });
 
 router.delete('/', async (ctx, next) => {
-    let {_id} = ctx.query;
     let {token} = ctx.request.header;
+    let {_id} = ctx.query;
     await jwt.checkToken(token)
         .then(async ({role}) => {
             if (role === 0) {
