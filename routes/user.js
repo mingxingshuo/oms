@@ -160,7 +160,7 @@ router.get('/all', async (ctx, next) => {
 // 修改父级
 router.get('/updateParent', async (ctx, next) => {
    let {id} = ctx.query;
-   let result = await UserModel.findByIdAndUpdate(id, {parentId: "5ec640687b0b607e83979798"}, {new: true});
+   let result = await UserModel.findByIdAndUpdate(id, {parentId: "5ec63dc9e3f98c7b166139e4"}, {new: true});
    if(result) {
        ctx.body = {code: 1, msg: "修改成功", data: result}
    } else {
