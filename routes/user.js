@@ -31,14 +31,14 @@ router.post('/login', async (ctx, next) => {
 });
 
 router.post('/', async (ctx, next) => {
-    let {username, password, role, remarks, nickName, power} = ctx.request.body;
+    let {username, password, role, remarks, nickName} = ctx.request.body;
     let {token} = ctx.request.header;
-    let result = await UserModel.find({username, parentId: userInfo._id});
-    if (result.length > 0) {
-        ctx.body = {code: 2, msg: "该账户名已存在，请检查输入是否有误"}
-    } else {
-        await jwt.checkToken(token)
-            .then(async userInfo => {
+    await jwt.checkToken(token)
+        .then(async userInfo => {
+            let result = await UserModel.find({username, parentId: userInfo._id});
+            if (result.length > 0) {
+                ctx.body = {code: 2, msg: "该账户名已存在，请检查输入是否有误"}
+            } else {
                 if (userInfo.role === 9999999999 || userInfo.role < role) {
                     let data = await UserModel.create({
                         username,
@@ -46,7 +46,6 @@ router.post('/', async (ctx, next) => {
                         password,
                         role,
                         remarks,
-                        power,
                         parentId: userInfo._id
                     });
                     if (data) {
@@ -59,8 +58,8 @@ router.post('/', async (ctx, next) => {
                     ctx.response.status = 403;
                     ctx.body = {code: -1, msg: '没有权限操作，拒绝访问'}
                 }
-            })
-    }
+            }
+        })
 });
 
 router.get('/', async (ctx, next) => {
