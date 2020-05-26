@@ -94,13 +94,13 @@ router.get('/', async (ctx, next) => {
 });
 
 router.put('/', async (ctx, next) => {
-    let {id, username, password, remarks} = ctx.request.body;
+    let {id, username, password, remarks, nickName} = ctx.request.body;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
         .then(async ({role}) => {
             if (role !== 1) {
                 let updateAt = Date.now();
-                let data = await UserModel.findByIdAndUpdate(id, {username, password, remarks, updateAt}, {new: true});
+                let data = await UserModel.findByIdAndUpdate(id, {username, password, remarks, updateAt, nickName}, {new: true});
                 if (data) {
                     ctx.body = {code: 1, msg: '用户信息修改成功', data}
                 } else {
