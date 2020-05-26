@@ -4,7 +4,9 @@ const crypto = require("crypto");
 const xml2js = require("xml2js");
 const builder = new xml2js.Builder();
 const parser = new xml2js.Parser();
+const md5 = require('../util/shunfengMD5');
 const OrderModel = require('../model/Order');
+const ReviewOrderModel = require('../model/reviewOrder');
 
 router.prefix('/order')
 
@@ -76,95 +78,18 @@ router.post('/create', async function (ctx, next) {
     }
 })
 
-router.get('/submit', async function (ctx, next) {
+router.get('/review', async function (ctx, next) {
     let orderid = ctx.request.query.orderid
     let order = await OrderModel.findOne({orderid: orderid})
-    let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
-    let xml = {
-        Request: {
-            $: {service: 'OrderService', lang: 'zh-CN'},
-            Head: 'MXSBJKJ',
-            Body: {
-                Order: {
-                    $: {
-                        orderid: orderid,
-                        j_company: order.j_company,
-                        j_contact: order.j_contact,
-                        j_tel: order.j_tel,
-                        j_mobile: order.j_mobile,
-                        j_province: order.j_province,
-                        j_city: order.j_city,
-                        j_county: order.j_county,
-                        j_address: order.j_address,
-                        d_company: order.d_company,
-                        d_contact: order.d_contact,
-                        d_tel: order.d_tel,
-                        d_mobile: order.d_mobile,
-                        d_province: order.d_province,
-                        d_city: order.d_city,
-                        d_county: order.d_county,
-                        d_address: order.d_address,
-                        custid: order.custid,
-                        pay_method: order.pay_method,
-                        express_type: order.express_type,
-                        parcel_quantity: order.parcel_quantity,
-                        cargo_length: order.cargo_length,
-                        cargo_width: order.cargo_width,
-                        cargo_height: order.cargo_height,
-                        volume: order.volume,
-                        cargo_total_weight: order.cargo_total_weight,
-                        sendstarttime: order.sendstarttime,
-                        is_docall: order.is_docall,
-                        return_tracking: order.return_tracking,
-                        temp_range: order.temp_range,
-                        template: order.template,
-                        remark: order.remark,
-                        oneself_pickup_flg: order.oneself_pickup_flg,
-                        special_delivery_type_code: order.special_delivery_type_code,
-                        special_delivery_value: order.special_delivery_value,
-                        realname_num: order.realname_num,
-                        routelabelForReturn: order.routelabelForReturn,
-                        routelabelService: order.routelabelService,
-                        is_unified_waybill_no: order.is_unified_waybill_no
-                    }
-                }
-            }
-        }
-    }
-    let cargos = []
-    for (let i of order.Cargo) {
-        cargos.push({$: i})
-    }
-    xml['Request']['Body']['Order']['Cargo'] = cargos
-
-    if (order.AddedService.length > 0) {
-        let addeds = []
-        for (let j of order.AddedService) {
-            addeds.push({$: j})
-        }
-        xml['Request']['Body']['Order']['AddedService'] = {}
-        xml['Request']['Body']['Order']['AddedService'] = addeds
-    }
-    console.log(JSON.stringify(xml), '-----------------------json')
-    xml = builder.buildObject(xml)
-    console.log(xml, '-----------------------xml')
-    let str = md5(xml + checkword)
-    let data = {
-        form: {
-            xml: xml,
-            verifyCode: str
-        }
-    }
-    let result = await req(url, data)
-    console.log(JSON.stringify(result), '-------------------------result')
-    if (result.type == 2) {
-        let mailno = result['data']['$']['mailno']
-        await OrderModel.update({orderid: ordeerid}, {mailno: mailno, dealtype: 1})
-        ctx.body = {code: 1, msg: '订单提交成功'}
+    let result = await ReviewOrderModel.create(order)
+    if (result) {
+        ctx.body = {code: 1, msg: '提交审核成功'}
     } else {
-        ctx.body = {code: -1, msg: result.data._}
+        ctx.response.status = 400;
+        ctx.body = {code: -1, msg: "提交审核失败"}
     }
 })
+
 
 router.get('/find', async function (ctx, next) {
     let {account_id, page = 1} = ctx.request.query;
@@ -194,7 +119,6 @@ router.get('/findOne', async function (ctx, next) {
 
 router.get('/OrderSearch', async function (ctx, next) {
     let {orderid, search_type} = ctx.request.query || ""
-    let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
     let xml = {
         Request: {
             $: {service: 'OrderSearchService', lang: 'zh-CN'},
@@ -217,7 +141,7 @@ router.get('/OrderSearch', async function (ctx, next) {
             verifyCode: str
         }
     }
-    let result = await req(url, data)
+    let result = await req(data)
     if (result.type == 2) {
         ctx.body = {code: 1, msg: '查询成功', data: result.data.$}
     } else {
@@ -227,7 +151,6 @@ router.get('/OrderSearch', async function (ctx, next) {
 
 router.get('/confirm', async function (ctx, next) {
     let {orderid, mailno, dealtype, customs_batchs, agent_no, consign_emp_code, source_zone_code, in_process_waybill_no} = ctx.request.query || ""
-    let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
     let xml = {
         Request: {
             $: {service: 'OrderConfirmService', lang: 'zh-CN'},
@@ -256,7 +179,7 @@ router.get('/confirm', async function (ctx, next) {
             verifyCode: str
         }
     }
-    let result = await req(url, data);
+    let result = await req(data);
     console.log(result, "result-----------------------取消订单打印");
     // 添加订单状态的判断
     if (result.type === 1 && result.data.$.code === '8060') { // 订单已签收
@@ -269,7 +192,6 @@ router.get('/confirm', async function (ctx, next) {
 
 router.get('/route', async function (ctx, next) {
     let {tracking_type, tracking_number, method_type, reference_number, check_phoneNo} = ctx.request.query || ""
-    let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
     let xml = {
         Request: {
             $: {service: 'RouteService', lang: 'zh-CN'},
@@ -295,7 +217,7 @@ router.get('/route', async function (ctx, next) {
             verifyCode: str
         }
     }
-    let result = await req(url, data)
+    let result = await req(data)
     if (result.type == 2) {
         ctx.body = {code: 1, msg: '查询成功', data: result.data}
     } else {
@@ -327,15 +249,9 @@ router.post('/OrderState', async function (ctx, next) {
     ctx.body = '<?xml version="1.0" encoding="UTF-8" ?> <Response> <success>true</success> </Response>'
 })
 
-function md5(str) {
-    let md5 = crypto.createHash('md5');
-    md5.update(str, "utf8");
-    str = md5.digest('base64');
-    return str
-}
-
-function req(url, data) {
+function req(data) {
     return new Promise((resolve, reject) => {
+        let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
         request.post(url, data, function (err, res, body) {
             parser.parseString(body, function (err1, result) {
                 if (result.Response.ERROR) {
