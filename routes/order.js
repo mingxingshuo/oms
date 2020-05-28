@@ -15,7 +15,7 @@ var checkword = "QE4CwVWGy1lBBIW5uoYFsZEwfyI7ScuU"
 
 router.post('/create', async function (ctx, next) {
     let {
-        orderid, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
+        customerId, orderid, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
         d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
         pay_method, express_type, parcel_quantity, cargo_length, cargo_width, cargo_height, volume,
         cargo_total_weight, sendstarttime, is_docall = 1, need_return_tracking_no, return_tracking,
@@ -30,6 +30,7 @@ router.post('/create', async function (ctx, next) {
                 parentId: parentId,
                 departmentId: departmentId,
                 userid: _id,
+                customerId,
                 orderid,
                 j_company,
                 j_contact,
@@ -179,7 +180,7 @@ router.get('/review', async function (ctx, next) {
 
 
 router.get('/find', async function (ctx, next) {
-    let {page = 1} = ctx.request.query;
+    let {customerId,page = 1} = ctx.request.query;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
         .then(async({role, parentId, departmentId, _id}) => {
@@ -192,6 +193,9 @@ router.get('/find', async function (ctx, next) {
             }
             if (role == 2) {
                 sql['userId'] = _id
+            }
+            if(customerId){
+                sql['customerId'] = customerId
             }
             let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort({updateAt: -1})
             let count = await OrderModel.estimatedDocumentCount(sql)
