@@ -7,6 +7,7 @@ const parser = new xml2js.Parser();
 const md5 = require('../util/shunfengMD5');
 const OrderModel = require('../model/Order');
 const ReviewOrderModel = require('../model/reviewOrder');
+const jwt = require("../util/jsonwebtoken");
 
 router.prefix('/order')
 
@@ -14,7 +15,7 @@ var checkword = "QE4CwVWGy1lBBIW5uoYFsZEwfyI7ScuU"
 
 router.post('/create', async function (ctx, next) {
     let {
-        account_id, customer_id, orderid, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
+        orderid, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
         d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
         pay_method, express_type, parcel_quantity, cargo_length, cargo_width, cargo_height, volume,
         cargo_total_weight, sendstarttime, is_docall = 1, need_return_tracking_no, return_tracking,
@@ -22,60 +23,64 @@ router.post('/create', async function (ctx, next) {
         special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no
     } = ctx.request.body || ""
     let {Cargo = [], AddedService = []} = ctx.request.body
-    let body = await OrderModel.create({
-        account_id,
-        customer_id,
-        orderid,
-        j_company,
-        j_contact,
-        j_tel,
-        j_mobile,
-        j_province,
-        j_city,
-        j_county,
-        j_address,
-        d_company,
-        d_contact,
-        d_tel,
-        d_mobile,
-        d_province,
-        d_city,
-        d_county,
-        d_address,
-        custid,
-        pay_method,
-        express_type,
-        parcel_quantity,
-        cargo_length,
-        cargo_width,
-        cargo_height,
-        volume,
-        cargo_total_weight,
-        sendstarttime,
-        is_docall,
-        need_return_tracking_no,
-        return_tracking,
-        temp_range,
-        template,
-        remark,
-        oneself_pickup_flg,
-        special_delivery_type_code,
-        special_delivery_value,
-        realname_num,
-        routelabelForReturn,
-        routelabelService,
-        is_unified_waybill_no,
-        Cargo,
-        AddedService,
-        createAt: Date.now(),
-        updateAt: Date.now()
-    })
-    if (body) {
-        ctx.body = {code: 1, msg: '订单创建成功'}
-    } else {
-        ctx.response.status = 400;
-        ctx.body = {code: -1, msg: '订单创建失败，请重试'}
-    }
+    let {token} = ctx.request.header;
+    await jwt.checkToken(token)
+        .then(async({departmentId, _id}) => {
+            let body = await OrderModel.create({
+                departmentId: departmentId,
+                userid: _id,
+                orderid,
+                j_company,
+                j_contact,
+                j_tel,
+                j_mobile,
+                j_province,
+                j_city,
+                j_county,
+                j_address,
+                d_company,
+                d_contact,
+                d_tel,
+                d_mobile,
+                d_province,
+                d_city,
+                d_county,
+                d_address,
+                custid,
+                pay_method,
+                express_type,
+                parcel_quantity,
+                cargo_length,
+                cargo_width,
+                cargo_height,
+                volume,
+                cargo_total_weight,
+                sendstarttime,
+                is_docall,
+                need_return_tracking_no,
+                return_tracking,
+                temp_range,
+                template,
+                remark,
+                oneself_pickup_flg,
+                special_delivery_type_code,
+                special_delivery_value,
+                realname_num,
+                routelabelForReturn,
+                routelabelService,
+                is_unified_waybill_no,
+                Cargo,
+                AddedService,
+                createAt: Date.now(),
+                updateAt: Date.now()
+            })
+            if (body) {
+                ctx.body = {code: 1, msg: '订单创建成功'}
+            } else {
+                ctx.response.status = 400;
+                ctx.body = {code: -1, msg: '订单创建失败，请重试'}
+            }
+        })
 })
 
 router.get('/review', async function (ctx, next) {

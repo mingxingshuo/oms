@@ -8,9 +8,10 @@ router.post('/', async(ctx, next) => {
     let {wxId, wxName, sex, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, source, type, remark} = ctx.request.body;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async({username, _id}) => {
+        .then(async({parentId, username, _id}) => {
             let wechat = await WechatModel.findOne({userId: _id})
             let data = await CustomerModel.create({
+                parentId: parentId,
                 userId: _id,
                 username: username,
                 userWxId: wechat.wechatId,
@@ -41,19 +42,19 @@ router.post('/', async(ctx, next) => {
 });
 
 router.get('/', async(ctx, next) => {
-    let {wxName, remark, page} = ctx.query;
+    let {name, page} = ctx.query;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async({role, _id}) => {
+        .then(async({parentId,role, _id}) => {
             let sql = {}
             if (role == 2) {
                 sql['userId'] = _id
             }
-            if (wxName) {
-                sql['wxName'] = {$regex: new RegExp(wxName)}
+            if(role == 0){
+                sql['parentId'] = parentId
             }
-            if (remark) {
-                sql['remark'] = {$regex: new RegExp(remark)}
+            if (name) {
+                $or: [{wxName: {$regex: new RegExp(name)}},{d_contact:{$regex: new RegExp(name)}}]
             }
             let result = await CustomerModel.find(sql).skip((page - 1) * 10).limit(10);
             let count = await CustomerModel.estimatedDocumentCount(sql);
@@ -70,9 +71,10 @@ router.put('/', async(ctx, next) => {
     let {id, wxId, wxName, sex, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, source, type, remark} = ctx.request.body;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async({username, _id}) => {
+        .then(async({parentId, username, _id}) => {
             let wechat = await WechatModel.findOne({userId: _id})
             let data = await CustomerModel.findByIdAndUpdate(id, {
+                parentId: parentId,
                 userId: _id,
                 username: username,
                 userWxId: wechat.wechatId,
