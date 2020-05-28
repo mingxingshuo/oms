@@ -209,7 +209,6 @@ router.get('/find', async function (ctx, next) {
                 sql['customerId'] = customerId
                 sort = {updateAt: -1}
             }
-            console.log(sql,sort,'-----------------')
             let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort(sort)
             let count = await OrderModel.estimatedDocumentCount(sql)
             if (orders.length > 0) {
