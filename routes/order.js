@@ -25,7 +25,7 @@ router.post('/create', async function (ctx, next) {
     let {Cargo = [], AddedService = []} = ctx.request.body
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async({parentId, departmentId, _id, role}) => {
+        .then(async ({parentId, departmentId, _id, role}) => {
             if (role === 2) {
                 let body = await OrderModel.create({
                     parentId: parentId,
@@ -102,7 +102,7 @@ router.post('/update', async function (ctx, next) {
     let {Cargo = [], AddedService = []} = ctx.request.body
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async({role}) => {
+        .then(async ({role}) => {
             if (role === 2) {
                 let body = await OrderModel.findByIdAndUpdate(id, {
                     orderid,
@@ -162,7 +162,7 @@ router.post('/update', async function (ctx, next) {
         })
 })
 
-router.get('/del', async(ctx, next) => {
+router.get('/del', async (ctx, next) => {
     let {id} = ctx.query;
     let result = await OrderModel.findByIdAndRemove(id);
     if (result) {
@@ -190,20 +190,20 @@ router.get('/find', async function (ctx, next) {
     let {customerId, page = 1} = ctx.request.query;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async({role, parentId, departmentId, _id}) => {
+        .then(async ({role, parentId, departmentId, _id}) => {
             let sql = {dealtype: {$ne: 2}}
-            let sort = {updateAt: -1}
+            let sort = {}
             if (role == 0) {
                 sql['parentId'] = _id
                 sql['isReview'] = 1
             }
             if (role == 1) {
                 sql['departmentId'] = departmentId
-                sort['isReview'] = 1
+                sort = {isReview: -1, updateAt: -1}
             }
             if (role == 2) {
                 sql['userId'] = _id
-                sort['isReview'] = 1
+                sort = {isReview: -1, updateAt: -1}
             }
             if (customerId) {
                 sql['customerId'] = customerId
