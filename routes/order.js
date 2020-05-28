@@ -192,19 +192,23 @@ router.get('/find', async function (ctx, next) {
     await jwt.checkToken(token)
         .then(async({role, parentId, departmentId, _id}) => {
             let sql = {dealtype: {$ne: 2}}
+            let sort = {updateAt: -1}
             if (role == 0) {
                 sql['parentId'] = _id
+                sql['isReview'] = 1
             }
             if (role == 1) {
                 sql['departmentId'] = departmentId
+                sort['isReview'] = -1
             }
             if (role == 2) {
                 sql['userId'] = _id
+                sort['isReview'] = -1
             }
             if (customerId) {
-                sql['customerId'] = customerId
+                sql = {dealtype: {$ne: 2}, customerId: customerId}
             }
-            let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort({updateAt: -1})
+            let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort(sort)
             let count = await OrderModel.estimatedDocumentCount(sql)
             if (orders.length > 0) {
                 ctx.body = {code: 1, msg: '查询成功', data: orders, count: count}
