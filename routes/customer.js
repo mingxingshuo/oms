@@ -90,7 +90,6 @@ router.put('/', async(ctx, next) => {
                 source,
                 type,
                 remark,
-                createAt: Date.now(),
                 updateAt: Date.now()
             }, {new: true});
             if (data) {

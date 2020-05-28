@@ -143,7 +143,6 @@ router.post('/update', async function (ctx, next) {
                 is_unified_waybill_no,
                 Cargo,
                 AddedService,
-                createAt: Date.now(),
                 updateAt: Date.now()
             })
             if (body) {
