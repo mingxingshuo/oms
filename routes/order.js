@@ -194,7 +194,6 @@ router.get('/find', async function (ctx, next) {
             if (role == 2) {
                 sql['userId'] = _id
             }
-            console.log(sql,'-------------------------sql')
             let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort({updateAt: -1})
             let count = await OrderModel.estimatedDocumentCount(sql)
             if (orders.length > 0) {
