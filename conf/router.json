@@ -49,7 +49,7 @@
                 }, {
                     "keyIndex": "customer",
                     "title": "客户列表",
-                    "path": "/admin/sales/customer/list"
+                    "path": "/admin/sales/customer/all"
                 }
             ]
         }
