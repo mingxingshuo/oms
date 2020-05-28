@@ -2,7 +2,7 @@ const router = require('koa-router')();
 const PayModel = require('../model/Pay.js');
 const multer = require('koa-multer');
 
-router.prefix('/customer');
+router.prefix('/pay');
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -20,11 +20,11 @@ router.post('/upload', upload.single('imageFile'), async (ctx, next) => {
 });
 
 router.post('/', async (ctx, next) => {
-    let {orderid, type, balance, image_url} = ctx.request.body;
+    let {orderid, type, money, image_url} = ctx.request.body;
     let data = await PayModel.create({
         orderid,
         type,
-        balance,
+        money,
         image_url
     });
     if (data) {
@@ -36,9 +36,9 @@ router.post('/', async (ctx, next) => {
 });
 
 router.get('/', async (ctx, next) => {
-    let {page} = ctx.query, result, total;
-    result = await PayModel.find().skip((page - 1) * 10).limit(10);
-    total = await PayModel.count();
+    let {page} = ctx.query;
+    let result = await PayModel.find().skip((page - 1) * 10).limit(10);
+    let total = await PayModel.count();
     if (result.length > 0) {
         ctx.body = {code: 1, msg: '查询成功', data: result, total}
     } else {
@@ -48,11 +48,11 @@ router.get('/', async (ctx, next) => {
 });
 
 router.put('/', async (ctx, next) => {
-    let {orderid, type, balance, image_url} = ctx.request.body;
+    let {orderid, type, money, image_url} = ctx.request.body;
     let data = await PayModel.findByIdAndUpdate(_id, {
         orderid,
         type,
-        balance,
+        money,
         image_url
     }, {new: true});
     if (data) {
