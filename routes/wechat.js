@@ -19,9 +19,8 @@ router.get('/', async (ctx, next) => {
                 total = await WechatModel.estimatedDocumentCount({parentId: _id});
                 ctx.body = {code: 1, msg: "查询成功", data: result, total};
             } else if (role === 2) {
-                result = await WechatModel.find({userId: _id}).skip((page - 1) * 10).limit(10);
-                total = await WechatModel.estimatedDocumentCount({userId: _id});
-                ctx.body = {code: 1, msg: "查询成功", data: result, total};
+                result = await WechatModel.find({userId: _id});
+                ctx.body = {code: 1, msg: "查询成功", data: result, total: result.length};
             } else {
                 ctx.response.status = 403;
                 ctx.body = {code: -1, msg: "该账户无操作权限"}
