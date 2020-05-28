@@ -3,11 +3,12 @@ const crypto = require("crypto");
 const xml2js = require("xml2js");
 const builder = new xml2js.Builder();
 const parser = new xml2js.Parser();
-const OrderModel = require('../model/Department');
+const OrderModel = require('../model/Order');
 
 async function a() {
-    let b = await OrderModel.find({})
-    console.log(b,'---------------------b')
+    let b = await OrderModel.findByIdAndUpdate('5ebbed72b168fe5fe47c7545', {parentId: '5ec63dc9e3f98c7b166139e4', departmentId: '5ec75afbbb4be93d24a57897', userId: '5ea9557f1808c716481ee8b3'},{new:true})
+    // let b = await OrderModel.find()
+    console.log(b, '---------------------b')
 }
 a()
 // function md5(str) {
@@ -37,14 +38,14 @@ async function test() {
     // xml['Request']['Body']['Order']['Cargo'] = {}
     // xml['Request']['Body']['Order']['Cargo']['$'] = {}
     let arr = []
-    for(let i of Cargo){
-        arr.push({$:i})
+    for (let i of Cargo) {
+        arr.push({$: i})
     }
     let AddedService = []
     xml['Request']['Body']['Order']['Cargo'] = arr
     let arr1 = []
-    for(let j of AddedService){
-        arr1.push({$:j})
+    for (let j of AddedService) {
+        arr1.push({$: j})
     }
     xml['Request']['Body']['Order']['AddedService'] = {}
     xml['Request']['Body']['Order']['AddedService'] = arr1

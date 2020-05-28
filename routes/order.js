@@ -25,8 +25,9 @@ router.post('/create', async function (ctx, next) {
     let {Cargo = [], AddedService = []} = ctx.request.body
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async({departmentId, _id}) => {
+        .then(async({parentId, departmentId, _id}) => {
             let body = await OrderModel.create({
+                parentId: parentId,
                 departmentId: departmentId,
                 userid: _id,
                 orderid,
@@ -83,6 +84,88 @@ router.post('/create', async function (ctx, next) {
         })
 })
 
+router.post('/update', async function (ctx, next) {
+    let {
+        id, orderid, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
+        d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
+        pay_method, express_type, parcel_quantity, cargo_length, cargo_width, cargo_height, volume,
+        cargo_total_weight, sendstarttime, is_docall = 1, need_return_tracking_no, return_tracking,
+        temp_range, template, remark, oneself_pickup_flg, special_delivery_type_code,
+        special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no
+    } = ctx.request.body || ""
+    let {Cargo = [], AddedService = []} = ctx.request.body
+    let {token} = ctx.request.header;
+    await jwt.checkToken(token)
+        .then(async({parentId, departmentId, _id}) => {
+            let body = await OrderModel.findByIdAndUpdate(id, {
+                parentId: parentId,
+                departmentId: departmentId,
+                userid: _id,
+                orderid,
+                j_company,
+                j_contact,
+                j_tel,
+                j_mobile,
+                j_province,
+                j_city,
+                j_county,
+                j_address,
+                d_company,
+                d_contact,
+                d_tel,
+                d_mobile,
+                d_province,
+                d_city,
+                d_county,
+                d_address,
+                custid,
+                pay_method,
+                express_type,
+                parcel_quantity,
+                cargo_length,
+                cargo_width,
+                cargo_height,
+                volume,
+                cargo_total_weight,
+                sendstarttime,
+                is_docall,
+                need_return_tracking_no,
+                return_tracking,
+                temp_range,
+                template,
+                remark,
+                oneself_pickup_flg,
+                special_delivery_type_code,
+                special_delivery_value,
+                realname_num,
+                routelabelForReturn,
+                routelabelService,
+                is_unified_waybill_no,
+                Cargo,
+                AddedService,
+                createAt: Date.now(),
+                updateAt: Date.now()
+            })
+            if (body) {
+                ctx.body = {code: 1, msg: '订单创建成功'}
+            } else {
+                ctx.response.status = 400;
+                ctx.body = {code: -1, msg: '订单创建失败，请重试'}
+            }
+        })
+})
+
+router.get('/del', async(ctx, next) => {
+    let {id} = ctx.query;
+    let result = await OrderModel.findByIdAndRemove(id);
+    if (result) {
+        ctx.body = {code: 1, msg: '删除成功'}
+    } else {
+        ctx.response.status = 400;
+        ctx.body = {code: -1, msg: "删除失败"}
+    }
+});
+
 router.get('/review', async function (ctx, next) {
     let orderid = ctx.request.query.orderid
     let order = await OrderModel.findOneAnsUpdate({orderid: orderid}, {isReview: 1})
@@ -97,18 +180,31 @@ router.get('/review', async function (ctx, next) {
 
 
 router.get('/find', async function (ctx, next) {
-    let {account_id, page = 1} = ctx.request.query;
-    let orders = await OrderModel.find({
-        account_id: account_id,
-        dealtype: {$ne: 2}
-    }).skip((page - 1) * 10).limit(10).sort({updateAt: -1})
-    let count = await OrderModel.count({account_id: account_id})
-    if (orders.length > 0) {
-        ctx.body = {code: 1, msg: '查询成功', data: orders, count: count}
-    } else {
-        ctx.response.status = 404;
-        ctx.body = {code: -1, msg: '没有查询到相关数据'}
-    }
+    let {page = 1} = ctx.request.query;
+    let {token} = ctx.request.header;
+    await jwt.checkToken(token)
+        .then(async(userInfo) => {
+            console.log(userInfo,'-----------------------------')
+            let sql = {dealtype: {$ne: 2}}
+            if (role == 0) {
+                sql['parentId'] = parentId
+            }
+            if (role == 1) {
+                sql['departmentId'] = departmentId
+            }
+            if (role == 2) {
+                sql['userId'] = _id
+            }
+            console.log(sql,'-------------------------sql')
+            let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort({updateAt: -1})
+            let count = await OrderModel.estimatedDocumentCount(sql)
+            if (orders.length > 0) {
+                ctx.body = {code: 1, msg: '查询成功', data: orders, count: count}
+            } else {
+                ctx.response.status = 404;
+                ctx.body = {code: -1, msg: '没有查询到相关数据'}
+            }
+        })
 })
 
 router.get('/findOne', async function (ctx, next) {

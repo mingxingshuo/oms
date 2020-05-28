@@ -4,6 +4,7 @@ var connect_url = require('../conf/proj.json').mongodb;
 var db = mongoose.createConnection(connect_url);
 
 var OrderSchema = new Schema({
+    parentId: String,   //公司账号id
     departmentId: String,   //部门id
     userId: String,     //销售账号id
     orderid: String,
