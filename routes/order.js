@@ -209,7 +209,7 @@ router.get('/find', async function (ctx, next) {
                 sql = {dealtype: {$ne: 2}, customerId: customerId}
             }
             let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort(sort)
-            let count = await OrderModel.estimatedDocumentCount(sql)
+            let count = await OrderModel.count(sql)
             if (orders.length > 0) {
                 ctx.body = {code: 1, msg: '查询成功', data: orders, count: count}
             } else {
