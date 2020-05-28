@@ -183,11 +183,10 @@ router.get('/find', async function (ctx, next) {
     let {page = 1} = ctx.request.query;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async(userInfo) => {
-            console.log(userInfo,'-----------------------------')
+        .then(async({role, parentId, departmentId, _id}) => {
             let sql = {dealtype: {$ne: 2}}
             if (role == 0) {
-                sql['parentId'] = parentId
+                sql['parentId'] = _id
             }
             if (role == 1) {
                 sql['departmentId'] = departmentId
