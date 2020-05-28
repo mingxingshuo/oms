@@ -175,7 +175,7 @@ router.get('/del', async(ctx, next) => {
 
 router.get('/review', async function (ctx, next) {
     let orderid = ctx.request.query.orderid
-    let order = await OrderModel.findOneAnsUpdate({orderid: orderid}, {isReview: 1})
+    let order = await OrderModel.findOneAndUpdate({orderid: orderid}, {isReview: 1})
     let result = await ReviewOrderModel.create(order)
     if (result) {
         ctx.body = {code: 1, msg: '提交审核成功'}
@@ -199,17 +199,19 @@ router.get('/find', async function (ctx, next) {
             }
             if (role == 1) {
                 sql['departmentId'] = departmentId
-                sort['isReview'] = -1
+                sort['isReview'] = 1
             }
             if (role == 2) {
                 sql['userId'] = _id
-                sort['isReview'] = -1
+                sort['isReview'] = 1
             }
             if (customerId) {
-                sql = {dealtype: {$ne: 2}, customerId: customerId}
+                sql['customerId'] = customerId
+                sort = {updateAt: -1}
             }
+            console.log(sql,sort,'-----------------')
             let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort(sort)
-            let count = await OrderModel.count(sql)
+            let count = await OrderModel.estimatedDocumentCount(sql)
             if (orders.length > 0) {
                 ctx.body = {code: 1, msg: '查询成功', data: orders, count: count}
             } else {
