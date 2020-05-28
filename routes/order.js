@@ -25,62 +25,67 @@ router.post('/create', async function (ctx, next) {
     let {Cargo = [], AddedService = []} = ctx.request.body
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async({parentId, departmentId, _id}) => {
-            let body = await OrderModel.create({
-                parentId: parentId,
-                departmentId: departmentId,
-                userid: _id,
-                customerId,
-                orderid,
-                j_company,
-                j_contact,
-                j_tel,
-                j_mobile,
-                j_province,
-                j_city,
-                j_county,
-                j_address,
-                d_company,
-                d_contact,
-                d_tel,
-                d_mobile,
-                d_province,
-                d_city,
-                d_county,
-                d_address,
-                custid,
-                pay_method,
-                express_type,
-                parcel_quantity,
-                cargo_length,
-                cargo_width,
-                cargo_height,
-                volume,
-                cargo_total_weight,
-                sendstarttime,
-                is_docall,
-                need_return_tracking_no,
-                return_tracking,
-                temp_range,
-                template,
-                remark,
-                oneself_pickup_flg,
-                special_delivery_type_code,
-                special_delivery_value,
-                realname_num,
-                routelabelForReturn,
-                routelabelService,
-                is_unified_waybill_no,
-                Cargo,
-                AddedService,
-                createAt: Date.now(),
-                updateAt: Date.now()
-            })
-            if (body) {
-                ctx.body = {code: 1, msg: '订单创建成功'}
+        .then(async({parentId, departmentId, _id, role}) => {
+            if (role === 2) {
+                let body = await OrderModel.create({
+                    parentId: parentId,
+                    departmentId: departmentId,
+                    userid: _id,
+                    customerId,
+                    orderid,
+                    j_company,
+                    j_contact,
+                    j_tel,
+                    j_mobile,
+                    j_province,
+                    j_city,
+                    j_county,
+                    j_address,
+                    d_company,
+                    d_contact,
+                    d_tel,
+                    d_mobile,
+                    d_province,
+                    d_city,
+                    d_county,
+                    d_address,
+                    custid,
+                    pay_method,
+                    express_type,
+                    parcel_quantity,
+                    cargo_length,
+                    cargo_width,
+                    cargo_height,
+                    volume,
+                    cargo_total_weight,
+                    sendstarttime,
+                    is_docall,
+                    need_return_tracking_no,
+                    return_tracking,
+                    temp_range,
+                    template,
+                    remark,
+                    oneself_pickup_flg,
+                    special_delivery_type_code,
+                    special_delivery_value,
+                    realname_num,
+                    routelabelForReturn,
+                    routelabelService,
+                    is_unified_waybill_no,
+                    Cargo,
+                    AddedService,
+                    createAt: Date.now(),
+                    updateAt: Date.now()
+                })
+                if (body) {
+                    ctx.body = {code: 1, msg: '订单创建成功'}
+                } else {
+                    ctx.response.status = 400;
+                    ctx.body = {code: -1, msg: '订单创建失败，请重试'}
+                }
             } else {
-                ctx.response.status = 400;
-                ctx.body = {code: -1, msg: '订单创建失败，请重试'}
+                ctx.response.status = 403;
+                ctx.body = {code: -1, msg: "该账户无操作权限"}
             }
         })
 })
@@ -97,60 +102,62 @@ router.post('/update', async function (ctx, next) {
     let {Cargo = [], AddedService = []} = ctx.request.body
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async({parentId, departmentId, _id}) => {
-            let body = await OrderModel.findByIdAndUpdate(id, {
-                parentId: parentId,
-                departmentId: departmentId,
-                userid: _id,
-                orderid,
-                j_company,
-                j_contact,
-                j_tel,
-                j_mobile,
-                j_province,
-                j_city,
-                j_county,
-                j_address,
-                d_company,
-                d_contact,
-                d_tel,
-                d_mobile,
-                d_province,
-                d_city,
-                d_county,
-                d_address,
-                custid,
-                pay_method,
-                express_type,
-                parcel_quantity,
-                cargo_length,
-                cargo_width,
-                cargo_height,
-                volume,
-                cargo_total_weight,
-                sendstarttime,
-                is_docall,
-                need_return_tracking_no,
-                return_tracking,
-                temp_range,
-                template,
-                remark,
-                oneself_pickup_flg,
-                special_delivery_type_code,
-                special_delivery_value,
-                realname_num,
-                routelabelForReturn,
-                routelabelService,
-                is_unified_waybill_no,
-                Cargo,
-                AddedService,
-                updateAt: Date.now()
-            })
-            if (body) {
-                ctx.body = {code: 1, msg: '订单创建成功'}
+        .then(async({role}) => {
+            if (role === 2) {
+                let body = await OrderModel.findByIdAndUpdate(id, {
+                    orderid,
+                    j_company,
+                    j_contact,
+                    j_tel,
+                    j_mobile,
+                    j_province,
+                    j_city,
+                    j_county,
+                    j_address,
+                    d_company,
+                    d_contact,
+                    d_tel,
+                    d_mobile,
+                    d_province,
+                    d_city,
+                    d_county,
+                    d_address,
+                    custid,
+                    pay_method,
+                    express_type,
+                    parcel_quantity,
+                    cargo_length,
+                    cargo_width,
+                    cargo_height,
+                    volume,
+                    cargo_total_weight,
+                    sendstarttime,
+                    is_docall,
+                    need_return_tracking_no,
+                    return_tracking,
+                    temp_range,
+                    template,
+                    remark,
+                    oneself_pickup_flg,
+                    special_delivery_type_code,
+                    special_delivery_value,
+                    realname_num,
+                    routelabelForReturn,
+                    routelabelService,
+                    is_unified_waybill_no,
+                    Cargo,
+                    AddedService,
+                    updateAt: Date.now()
+                })
+                if (body) {
+                    ctx.body = {code: 1, msg: '订单修改成功'}
+                } else {
+                    ctx.response.status = 400;
+                    ctx.body = {code: -1, msg: '订单修改失败，请重试'}
+                }
             } else {
-                ctx.response.status = 400;
-                ctx.body = {code: -1, msg: '订单创建失败，请重试'}
+                ctx.response.status = 403;
+                ctx.body = {code: -1, msg: "该账户无操作权限"}
             }
         })
 })
@@ -180,7 +187,7 @@ router.get('/review', async function (ctx, next) {
 
 
 router.get('/find', async function (ctx, next) {
-    let {customerId,page = 1} = ctx.request.query;
+    let {customerId, page = 1} = ctx.request.query;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
         .then(async({role, parentId, departmentId, _id}) => {
@@ -194,7 +201,7 @@ router.get('/find', async function (ctx, next) {
             if (role == 2) {
                 sql['userId'] = _id
             }
-            if(customerId){
+            if (customerId) {
                 sql['customerId'] = customerId
             }
             let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort({updateAt: -1})
