@@ -3,7 +3,7 @@ const crypto = require("crypto");
 const xml2js = require("xml2js");
 const builder = new xml2js.Builder();
 const parser = new xml2js.Parser();
-const OrderModel = require('../model/Order');
+const OrderModel = require('../model/User');
 
 async function a() {
     let b = await OrderModel.find({})
