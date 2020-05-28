@@ -70,14 +70,15 @@ router.put('/', async (ctx, next) => {
 });
 
 router.put('/setManage', async (ctx, next) => {
-    let {body: {id, manageId, manageName, oldManageId = ""}, header: {token}} = ctx.request;
+    let {body: {id, manageId, manageName, oldManageId = "", }, header: {token}} = ctx.request;
     await jwt.checkToken(token)
         .then(async ({role}) => {
             if (role === 0) {
                 let updateAt = Date.now();
                 let data = await DepartmentModel.findByIdAndUpdate(id, {manageId, manageName, updateAt}, {new: true});
                 if (data) {
-                    await UserModal.findByIdAndUpdate(manageId, {role: 1});
+                    const { _id: departmentId, name: departmentName } = data;
+                    await UserModal.findByIdAndUpdate(manageId, {role: 1, departmentId, departmentName});
                     await UserModal.findByIdAndUpdate(oldManageId, {role: 2});
                     ctx.body = {code: 1, msg: '管理员设置成功', data}
                 } else {
