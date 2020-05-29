@@ -199,11 +199,11 @@ router.get('/find', async function (ctx, next) {
             }
             if (role == 1) {
                 sql['departmentId'] = departmentId
-                sort = {isReview: -1, updateAt: -1}
+                sort = {isReview: 1, updateAt: -1}
             }
             if (role == 2) {
                 sql['userId'] = _id
-                sort = {isReview: -1, updateAt: -1}
+                sort = {isReview: 1, updateAt: -1}
             }
             if (customerId) {
                 sql['customerId'] = customerId
