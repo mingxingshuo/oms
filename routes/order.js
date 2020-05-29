@@ -191,11 +191,11 @@ router.get('/find', async function (ctx, next) {
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
         .then(async ({role, parentId, departmentId, _id}) => {
-            let sql = {dealtype: {$ne: 2}}
-            let sort = {}
+            let sql = {dealtype: {$ne: 2}}, sort
             if (role == 0) {
                 sql['parentId'] = _id
                 sql['isReview'] = 1
+                sort = {updateAt: -1}
             }
             if (role == 1) {
                 sql['departmentId'] = departmentId
