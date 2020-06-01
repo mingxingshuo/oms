@@ -176,10 +176,16 @@ router.get('/del', async(ctx, next) => {
 router.get('/review', async function (ctx, next) {
     let orderid = ctx.request.query.orderid
     let order = await OrderModel.findOneAndUpdate({orderid: orderid}, {isReview: 1})
-    let result = await ReviewOrderModel.create(order)
-    if (result) {
-        ctx.body = {code: 1, msg: '提交审核成功'}
-    } else {
+    if(order){
+        order = order.toObject()
+        let result = await ReviewOrderModel.create(order)
+        if (result) {
+            ctx.body = {code: 1, msg: '提交审核成功'}
+        } else {
+            ctx.response.status = 400;
+            ctx.body = {code: -1, msg: "提交审核失败"}
+        }
+    }else{
         ctx.response.status = 400;
         ctx.body = {code: -1, msg: "提交审核失败"}
     }
