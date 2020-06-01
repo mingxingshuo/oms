@@ -20,7 +20,7 @@ router.post('/upload', upload.single('imageFile'), async (ctx, next) => {
 });
 
 router.post('/', async (ctx, next) => {
-    let {orderid, info, sum, image_url} = ctx.request.body;
+    let {orderid, info, sum} = ctx.request.body;
     let data = await PayModel.create({
         orderid,
         info,
@@ -47,7 +47,7 @@ router.get('/', async (ctx, next) => {
 });
 
 router.put('/', async (ctx, next) => {
-    let {orderid, info, sum, image_url} = ctx.request.body;
+    let {orderid, info, sum} = ctx.request.body;
     let data = await PayModel.findByIdAndUpdate(_id, {
         orderid,
         info,
