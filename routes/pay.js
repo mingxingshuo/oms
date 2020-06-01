@@ -15,44 +15,28 @@ var storage = multer.diskStorage({
 })
 var upload = multer({storage: storage});
 
-router.post('/upload', upload.single('imageFile'), async (ctx, next) => {
+router.post('/upload', upload.single('imageFile'), async(ctx, next) => {
     ctx.body = {image_url: ctx.req.file.filename};
 });
 
-router.post('/', async (ctx, next) => {
-    let {orderid, info, sum} = ctx.request.body;
-    let data = await PayModel.create({
-        orderid,
-        info,
-        sum,
-    });
-    if (data) {
-        ctx.body = {code: 1, msg: '支付创建成功', data}
-    } else {
-        ctx.response.status = 400;
-        ctx.body = {code: -1, msg: '支付创建失败，请重试'}
-    }
-});
-
-router.get('/', async (ctx, next) => {
-    let {page} = ctx.query;
-    let result = await PayModel.find().skip((page - 1) * 10).limit(10);
-    let total = await PayModel.count();
-    if (result.length > 0) {
-        ctx.body = {code: 1, msg: '查询成功', data: result, total}
+router.get('/', async(ctx, next) => {
+    let {orderid} = ctx.query;
+    let result = await PayModel.findById(orderid);
+    if (result) {
+        ctx.body = {code: 1, msg: '查询成功', data: result}
     } else {
         ctx.response.status = 404;
         ctx.body = {code: -1, msg: '没有查询到相关数据'}
     }
 });
 
-router.put('/', async (ctx, next) => {
-    let {orderid, info, sum} = ctx.request.body;
+router.put('/', async(ctx, next) => {
+    let {_id, orderid, info, sum} = ctx.request.body;
     let data = await PayModel.findByIdAndUpdate(_id, {
         orderid,
         info,
         sum
-    }, {new: true});
+    }, {upsert: true, new: true});
     if (data) {
         ctx.body = {code: 1, msg: '修改成功', data}
     } else {
@@ -61,7 +45,7 @@ router.put('/', async (ctx, next) => {
     }
 });
 
-router.delete('/', async (ctx, next) => {
+router.delete('/', async(ctx, next) => {
     let {_id} = ctx.query;
     let result = await PayModel.findByIdAndRemove(_id);
     if (result) {
