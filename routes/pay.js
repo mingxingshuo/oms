@@ -1,6 +1,7 @@
 const router = require('koa-router')();
 const PayModel = require('../model/Pay.js');
 const multer = require('koa-multer');
+const checkHasAccountId = require("../util/checkHasAccountId");
 
 router.prefix('/pay');
 

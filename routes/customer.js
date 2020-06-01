@@ -2,7 +2,13 @@ const router = require('koa-router')();
 const CustomerModel = require('../model/Customer');
 const WechatModel = require('../model/Wechat');
 const jwt = require("../util/jsonwebtoken");
+const checkHasAccountId = require("../util/checkHasAccountId");
+
 router.prefix('/customer');
+
+router.all("*", async (ctx, next) => {
+    await checkHasAccountId(ctx, next);
+});
 
 router.post('/', async(ctx, next) => {
     let {userWxId, userWxname, wxId, wxName, sex, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, source, type, remark} = ctx.request.body;
