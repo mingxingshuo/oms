@@ -30,7 +30,7 @@ router.post('/create', async function (ctx, next) {
                 let body = await OrderModel.create({
                     parentId: parentId,
                     departmentId: departmentId,
-                    userid: _id,
+                    userId: _id,
                     customerId,
                     orderid,
                     j_company,
