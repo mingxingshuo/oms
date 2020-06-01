@@ -20,11 +20,11 @@ router.post('/upload', upload.single('imageFile'), async (ctx, next) => {
 });
 
 router.post('/', async (ctx, next) => {
-    let {orderid, info, money, image_url} = ctx.request.body;
+    let {orderid, info, sum, image_url} = ctx.request.body;
     let data = await PayModel.create({
         orderid,
         info,
-        money,
+        sum,
     });
     if (data) {
         ctx.body = {code: 1, msg: '支付创建成功', data}
@@ -47,11 +47,11 @@ router.get('/', async (ctx, next) => {
 });
 
 router.put('/', async (ctx, next) => {
-    let {orderid, info, money, image_url} = ctx.request.body;
+    let {orderid, info, sum, image_url} = ctx.request.body;
     let data = await PayModel.findByIdAndUpdate(_id, {
         orderid,
         info,
-        money
+        sum
     }, {new: true});
     if (data) {
         ctx.body = {code: 1, msg: '修改成功', data}
