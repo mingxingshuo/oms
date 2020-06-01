@@ -2,7 +2,7 @@ const jwt = require("./jsonwebtoken");
 
 async function checkHasAccountId(ctx, next) {
     let {token} = ctx.request.header;
-    if(ctx.request.url === ("/user/login")) {
+    if(ctx.request.url === ("/user/login" || "/pay/upload")) {
         await next()
     } else if (token) {
         await jwt.checkToken(token)
