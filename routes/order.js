@@ -25,7 +25,7 @@ router.post('/create', async function (ctx, next) {
     let {Cargo = [], AddedService = []} = ctx.request.body
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async ({parentId, departmentId, _id, role}) => {
+        .then(async({parentId, departmentId, _id, role}) => {
             if (role === 2) {
                 let body = await OrderModel.create({
                     parentId: parentId,
@@ -102,7 +102,7 @@ router.post('/update', async function (ctx, next) {
     let {Cargo = [], AddedService = []} = ctx.request.body
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async ({role}) => {
+        .then(async({role}) => {
             if (role === 2) {
                 let body = await OrderModel.findByIdAndUpdate(id, {
                     orderid,
@@ -162,7 +162,7 @@ router.post('/update', async function (ctx, next) {
         })
 })
 
-router.get('/del', async (ctx, next) => {
+router.get('/del', async(ctx, next) => {
     let {id} = ctx.query;
     let result = await OrderModel.findByIdAndRemove(id);
     if (result) {
@@ -190,32 +190,37 @@ router.get('/find', async function (ctx, next) {
     let {customerId, page = 1} = ctx.request.query;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async ({role, parentId, departmentId, _id}) => {
-            let sql = {dealtype: {$ne: 2}}, sort
-            if (role == 0) {
-                sql['parentId'] = _id
-                sql['isReview'] = 1
-                sort = {updateAt: -1}
-            }
-            if (role == 1) {
-                sql['departmentId'] = departmentId
-                sort = {isReview: 1, updateAt: -1}
-            }
-            if (role == 2) {
-                sql['userId'] = _id
-                sort = {isReview: 1, updateAt: -1}
-            }
-            if (customerId) {
-                sql['customerId'] = customerId
-                sort = {updateAt: -1}
-            }
-            let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort(sort)
-            let count = await OrderModel.estimatedDocumentCount(sql)
-            if (orders.length > 0) {
-                ctx.body = {code: 1, msg: '查询成功', data: orders, count: count}
+        .then(async({role, parentId, departmentId, _id}) => {
+            if (role) {
+                let sql = {dealtype: {$ne: 2}}, sort
+                if (role == 0) {
+                    sql['parentId'] = _id
+                    sql['isReview'] = 1
+                    sort = {updateAt: -1}
+                }
+                if (role == 1) {
+                    sql['departmentId'] = departmentId
+                    sort = {isReview: 1, updateAt: -1}
+                }
+                if (role == 2) {
+                    sql['userId'] = _id
+                    sort = {isReview: 1, updateAt: -1}
+                }
+                if (customerId) {
+                    sql = {customerId: customerId}
+                    sort = {updateAt: -1}
+                }
+                let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort(sort)
+                let count = await OrderModel.estimatedDocumentCount(sql)
+                if (orders.length > 0) {
+                    ctx.body = {code: 1, msg: '查询成功', data: orders, count: count}
+                } else {
+                    ctx.response.status = 404;
+                    ctx.body = {code: -1, msg: '没有查询到相关数据'}
+                }
             } else {
-                ctx.response.status = 404;
-                ctx.body = {code: -1, msg: '没有查询到相关数据'}
+                ctx.response.status = 403;
+                ctx.body = {code: -1, msg: "该账户无操作权限"}
             }
         })
 })
