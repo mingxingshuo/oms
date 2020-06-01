@@ -4,6 +4,10 @@ const multer = require('koa-multer');
 
 router.prefix('/pay');
 
+router.all("*", async (ctx, next) => {
+    await checkHasAccountId(ctx, next);
+});
+
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, __dirname + '/../public/uploads/')

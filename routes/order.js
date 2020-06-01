@@ -11,6 +11,10 @@ const jwt = require("../util/jsonwebtoken");
 
 router.prefix('/order')
 
+router.all("*", async (ctx, next) => {
+    await checkHasAccountId(ctx, next);
+});
+
 var checkword = "QE4CwVWGy1lBBIW5uoYFsZEwfyI7ScuU"
 
 router.post('/create', async function (ctx, next) {
