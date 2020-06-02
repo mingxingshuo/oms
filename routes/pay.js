@@ -37,7 +37,6 @@ router.get('/', async(ctx, next) => {
 router.put('/', async(ctx, next) => {
     let {orderid, info, sum} = ctx.request.body;
     console.log(orderid, info, sum)
-    info = JSON.stringify(info);
     let data = await PayModel.findOneAndUpdate({orderid}, {
         info,
         sum
