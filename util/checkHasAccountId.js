@@ -7,7 +7,6 @@ async function checkHasAccountId(ctx, next) {
     } else if (token) {
         await jwt.checkToken(token)
             .then(async () => {
-                console.log("token验证通过");
                 await next()
             })
             .catch(err => {

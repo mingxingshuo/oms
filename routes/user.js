@@ -31,7 +31,7 @@ router.post('/login', async (ctx, next) => {
 });
 
 router.post('/', async (ctx, next) => {
-    let {username, password, role, remarks, nickName} = ctx.request.body;
+    let {username, password, remarks, nickName, departmentId, departmentName} = ctx.request.body;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
         .then(async userInfo => {
@@ -39,14 +39,15 @@ router.post('/', async (ctx, next) => {
             if (result.length > 0) {
                 ctx.body = {code: 2, msg: "该账户名已存在，请检查输入是否有误"}
             } else {
-                if (userInfo.role === 9999999999 || userInfo.role < role) {
+                if (userInfo.role === 9999999999 || userInfo.role < 1) {
                     let data = await UserModel.create({
                         username,
                         nickName,
                         password,
-                        role,
+                        role: 2,
                         remarks,
-                        parentId: userInfo._id
+                        parentId: userInfo._id,
+                        departmentId, departmentName
                     });
                     if (data) {
                         ctx.body = {code: 1, msg: '账户创建成功', data}
@@ -68,24 +69,27 @@ router.get('/', async (ctx, next) => {
     await jwt.checkToken(token)
         .then(async userInfo => {
             if (userInfo.role === 0 || userInfo.role === 9999999999) {
+                let sql = {}, sortOptions = {};
                 if (username) {
-                    result = await UserModel.find({
+                    sql = {
                         username: {$regex: new RegExp(username)},
                         parentId: userInfo._id
-                    }).skip((page - 1) * 10).limit(10).sort({role: -1, _id: -1});
-                    total = await UserModel.estimatedDocumentCount({
-                        username: {$regex: new RegExp(username)},
-                        parentId: userInfo._id
-                    });
-                    ctx.body = {code: 1, msg: '查询成功', data: result, total}
+                    };
+                    sortOptions = {role: -1, _id: -1}
                 } else if (role) {
-                    result = await UserModel.find({parentId: userInfo._id, role});
-                    ctx.body = {code: 1, msg: "查询成功", data: result};
+                    // 查询所有role = 2的用户
+                    sql = {
+                        parentId: userInfo._id,
+                        role
+                    }
                 } else {
-                    result = await UserModel.find({parentId: userInfo._id}).skip((page - 1) * 10).limit(10);
-                    total = await UserModel.estimatedDocumentCount({parentId: userInfo._id});
-                    ctx.body = {code: 1, msg: "查询成功", data: result, total};
+                    sql = {
+                        parentId: userInfo._id
+                    }
                 }
+                result = await UserModel.find(sql).skip((page - 1) * 10).limit(10).sort(sortOptions);
+                total = await UserModel.count(sql);
+                ctx.body = {code: 1, msg: '查询成功', data: result, total}
             } else {
                 ctx.response.status = 403;
                 ctx.body = {code: -1, msg: '该账户无操作权限'}
@@ -94,13 +98,13 @@ router.get('/', async (ctx, next) => {
 });
 
 router.put('/', async (ctx, next) => {
-    let {id, username, password, remarks, nickName} = ctx.request.body;
+    let {id, username, password, remarks, nickName, departmentId, departmentName} = ctx.request.body;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
         .then(async ({role}) => {
             if (role !== 1) {
                 let updateAt = Date.now();
-                let data = await UserModel.findByIdAndUpdate(id, {username, password, remarks, updateAt, nickName}, {new: true});
+                let data = await UserModel.findByIdAndUpdate(id, {username, password, remarks, departmentId, departmentName, updateAt, nickName}, {new: true});
                 if (data) {
                     ctx.body = {code: 1, msg: '用户信息修改成功', data}
                 } else {

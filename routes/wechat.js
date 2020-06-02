@@ -13,14 +13,13 @@ router.get('/', async (ctx, next) => {
     let {page = 1} = ctx.query, result, total;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async ({role, _id}) => {
-            if (role === 0) {
-                result = await WechatModel.find({parentId: _id}).skip((page - 1) * 10).limit(10);
-                total = await WechatModel.estimatedDocumentCount({parentId: _id});
+        .then(async ({role, parentId, _id}) => {
+            if (role === 0 || role === 2) {
+                let sql = {parentId: _id};
+                role === 2 && (sql = {parentId, userId: _id});
+                result = await WechatModel.find(sql).skip((page - 1) * 10).limit(10);
+                total = await WechatModel.count(sql);
                 ctx.body = {code: 1, msg: "查询成功", data: result, total};
-            } else if (role === 2) {
-                result = await WechatModel.find({userId: _id});
-                ctx.body = {code: 1, msg: "查询成功", data: result, total: result.length};
             } else {
                 ctx.response.status = 403;
                 ctx.body = {code: -1, msg: "该账户无操作权限"}
