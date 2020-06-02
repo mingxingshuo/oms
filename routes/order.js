@@ -12,7 +12,7 @@ const jwt = require("../util/jsonwebtoken");
 
 router.prefix('/order')
 
-router.all("*", async (ctx, next) => {
+router.all("*", async(ctx, next) => {
     await checkHasAccountId(ctx, next);
 });
 
@@ -181,7 +181,7 @@ router.get('/del', async(ctx, next) => {
 router.get('/review', async function (ctx, next) {
     let orderid = ctx.request.query.orderid
     let order = await OrderModel.findOneAndUpdate({orderid: orderid}, {isReview: 1})
-    if(order){
+    if (order) {
         order = order.toObject()
         delete order._id;
         let result = await ReviewOrderModel.create(order)
@@ -192,7 +192,7 @@ router.get('/review', async function (ctx, next) {
             ctx.body = {code: -1, msg: "提交审核失败"}
             await OrderModel.findOneAndUpdate({orderid: orderid}, {isReview: 0})
         }
-    }else{
+    } else {
         ctx.response.status = 400;
         ctx.body = {code: -1, msg: "找不到该订单"}
     }
@@ -200,7 +200,7 @@ router.get('/review', async function (ctx, next) {
 
 
 router.get('/find', async function (ctx, next) {
-    let {customerId, page = 1} = ctx.request.query;
+    let {orderid, customerId, page = 1} = ctx.request.query;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
         .then(async({role, parentId, departmentId, _id}) => {
@@ -219,6 +219,9 @@ router.get('/find', async function (ctx, next) {
                     sql['userId'] = _id
                     sort = {isReview: 1, updateAt: -1}
                 }
+                if (orderid) {
+                    sql['orderid'] = orderid
+                }
                 if (customerId) {
                     sql = {customerId: customerId}
                     sort = {updateAt: -1}
@@ -236,17 +239,6 @@ router.get('/find', async function (ctx, next) {
                 ctx.body = {code: -1, msg: "该账户无操作权限"}
             }
         })
-})
-
-router.get('/findOne', async function (ctx, next) {
-    let {orderid} = ctx.request.query;
-    let order = await OrderModel.find({orderid: orderid})
-    if (order.length > 0) {
-        ctx.body = {code: 1, msg: '查询成功', data: order}
-    } else {
-        ctx.response.status = 404;
-        ctx.body = {code: -1, msg: '没有查询到相关数据'}
-    }
 })
 
 router.get('/OrderSearch', async function (ctx, next) {
