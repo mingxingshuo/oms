@@ -64,7 +64,7 @@ router.get('/', async(ctx, next) => {
                 sql['parentId'] = _id
             }
             if (name) {
-                $or: [{wxName: {$regex: new RegExp(name)}}, {d_contact: {$regex: new RegExp(name)}}]
+                sql['$or'] = [{wxName: {$regex: new RegExp(name)}}, {d_contact: {$regex: new RegExp(name)}}]
             }
             let result = await CustomerModel.find(sql).skip((page - 1) * 10).limit(10);
             let count = await CustomerModel.estimatedDocumentCount(sql);
