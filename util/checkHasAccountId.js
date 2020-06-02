@@ -10,11 +10,11 @@ async function checkHasAccountId(ctx, next) {
                 console.log("token验证通过")
                 await next()
             })
-            .catch(() => {
-                console.log("token验证失败")
-                ctx.response.status = 401;
-                ctx.body = {code: -1, msg: "登录信息失效，token无效"}
-            })
+            // .catch(() => {
+            //     console.log("token验证失败")
+            //     ctx.response.status = 401;
+            //     ctx.body = {code: -1, msg: "登录信息失效，token无效"}
+            // })
     } else {
         ctx.response.status = 401;
         ctx.body = {code: -1, msg: "token缺失"}
