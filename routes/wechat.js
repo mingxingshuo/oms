@@ -30,7 +30,7 @@ router.get('/', async (ctx, next) => {
 
 router.post('/', async (ctx, next) => {
     let {wechatId, nickName, remarks} = ctx.request.body;
-    let result = await WechatModel.find({wechatId, parentId: _id});
+    let result = await WechatModel.find({wechatId});
     if (result.length > 0) {
         ctx.body = {code: 2, msg: "该微信号已存在，请添加新的微信号", data: result}
     } else {
