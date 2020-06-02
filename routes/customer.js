@@ -6,7 +6,7 @@ const checkHasAccountId = require("../util/checkHasAccountId");
 
 router.prefix('/customer');
 
-router.all("*", async (ctx, next) => {
+router.all("*", async(ctx, next) => {
     await checkHasAccountId(ctx, next);
 });
 
@@ -14,7 +14,7 @@ router.post('/', async(ctx, next) => {
     let {userWxId, userWxname, wxId, wxName, sex, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, source, type, remark} = ctx.request.body;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async({parentId, username, _id}) => {
+        .then(async({role, parentId, username, _id}) => {
             if (role === 2) {
                 let data = await CustomerModel.create({
                     parentId: parentId,
