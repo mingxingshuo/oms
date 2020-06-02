@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const secret = "mingxingshuo66";
 
 function createToken(payload) {
-    return jwt.sign(payload, secret, {expiresIn: '2h'})
+    return jwt.sign(payload, secret, {expiresIn: '12h'})
 }
 
 function checkToken(token) {
