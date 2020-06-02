@@ -12,6 +12,7 @@ function checkToken(token) {
             if (!err) {
                 resolve(res._doc)
             } else {
+                console.log(err)
                 reject("token验证失败");
             }
         })
