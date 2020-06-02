@@ -11,11 +11,11 @@ async function checkHasAccountId(ctx, next) {
             })
             .catch(() => {
                 ctx.response.status = 401;
-                ctx.body = {code: -1, msg: "登录信息失效，token无效或缺失"}
+                ctx.body = {code: -1, msg: "登录信息失效，token无效"}
             })
     } else {
         ctx.response.status = 401;
-        ctx.body = {code: -1, msg: "登录信息失效，token无效或缺失"}
+        ctx.body = {code: -1, msg: "token缺失"}
     }
 }
 
