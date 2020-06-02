@@ -36,18 +36,17 @@ router.get('/', async(ctx, next) => {
 
 router.put('/', async(ctx, next) => {
     let {orderid, info, sum} = ctx.request.body;
-    console.log(orderid, info, sum)
-    // let data = await PayModel.findOneAndUpdate({orderid}, {
-    //     orderid,
-    //     info,
-    //     sum
-    // }, {upsert: true, new: true});
-    // if (data) {
-    //     ctx.body = {code: 1, msg: '修改成功', data}
-    // } else {
-    //     ctx.response.status = 400;
-    //     ctx.body = {code: -1, msg: '修改失败，请重试'}
-    // }
+    let data = await PayModel.findOneAndUpdate({orderid}, {
+        orderid,
+        info,
+        sum
+    }, {upsert: true, new: true});
+    if (data) {
+        ctx.body = {code: 1, msg: '修改成功', data}
+    } else {
+        ctx.response.status = 400;
+        ctx.body = {code: -1, msg: '修改失败，请重试'}
+    }
 });
 
 router.delete('/', async(ctx, next) => {
