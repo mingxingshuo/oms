@@ -5,7 +5,7 @@ var db = mongoose.createConnection(connect_url);
 
 var PaySchema = new Schema({
     orderid: String,
-    info: [{type: String, money: Number, url: String}],
+    info: [],
     sum: Number
 });
 
