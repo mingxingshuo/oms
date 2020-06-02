@@ -26,11 +26,10 @@ router.post('/upload', upload.single('imageFile'), async(ctx, next) => {
 
 router.get('/', async(ctx, next) => {
     let {orderid} = ctx.query;
-    let result = await PayModel.findById(orderid);
+    let result = await PayModel.findOne({orderid});
     if (result) {
         ctx.body = {code: 1, msg: '查询成功', data: result}
     } else {
-        ctx.response.status = 404;
         ctx.body = {code: -1, msg: '没有查询到相关数据'}
     }
 });
