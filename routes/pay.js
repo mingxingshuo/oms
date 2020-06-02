@@ -4,10 +4,10 @@ const multer = require('koa-multer');
 const checkHasAccountId = require("../util/checkHasAccountId");
 
 router.prefix('/pay');
-//
-// router.all("*", async (ctx, next) => {
-//     await checkHasAccountId(ctx, next);
-// });
+
+router.all("*", async (ctx, next) => {
+    await checkHasAccountId(ctx, next);
+});
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -36,6 +36,7 @@ router.get('/', async(ctx, next) => {
 
 router.put('/', async(ctx, next) => {
     let {orderid, info, sum} = ctx.request.body;
+    console.log(orderid, info, sum)
     let data = await PayModel.findOneAndUpdate({orderid}, {
         orderid,
         info,
