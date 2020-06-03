@@ -104,7 +104,9 @@ router.put('/', async (ctx, next) => {
         .then(async ({role}) => {
             if (role !== 1) {
                 let updateAt = Date.now();
-                let data = await UserModel.findByIdAndUpdate(id, {username, password, remarks, departmentId, departmentName, updateAt, nickName}, {new: true});
+                let message = {username, password, remarks, departmentId, departmentName, updateAt, nickName};
+                !password && delete message.password;
+                let data = await UserModel.findByIdAndUpdate(id, message, {new: true});
                 if (data) {
                     ctx.body = {code: 1, msg: '用户信息修改成功', data}
                 } else {
@@ -117,7 +119,6 @@ router.put('/', async (ctx, next) => {
             }
         })
 });
-
 
 router.put('/setDepartment', async (ctx, next) => {
     let {departmentId, departmentName, _ids} = ctx.request.body;
