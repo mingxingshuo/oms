@@ -232,6 +232,7 @@ router.get('/find', async function (ctx, next) {
                 let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort(sort)
                 let count = await OrderModel.count(sql)
                 if (csv) {
+                    let data = await OrderModel.find(sql).sort(sort)
                     let name = Date.now() + '.csv'
                     const ws = fs.createWriteStream(__dirname + '/../public/data_file/' + name, {
                         flags: 'w',
@@ -239,7 +240,7 @@ router.get('/find', async function (ctx, next) {
                     });
                     ws.write("orderid,mailno,j_company,j_contact\r\n", () => {
                     });
-                    for (let i of orders) {
+                    for (let i of data) {
                         ws.write(i.orderid + "," + i.mailno + "," + i.j_company + "," + i.j_contact + "\r\n", () => {
                         });
                     }
