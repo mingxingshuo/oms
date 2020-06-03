@@ -30,12 +30,13 @@ router.post('/create', async function (ctx, next) {
     let {Cargo = [], AddedService = []} = ctx.request.body
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async({parentId, departmentId, _id, role}) => {
+        .then(async({parentId, departmentId, nickName, _id, role}) => {
             if (role === 2) {
                 let body = await OrderModel.create({
                     parentId: parentId,
                     departmentId: departmentId,
                     userId: _id,
+                    nickName: nickName,
                     customerId,
                     orderid,
                     j_company,

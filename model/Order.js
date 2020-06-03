@@ -7,6 +7,7 @@ var OrderSchema = new Schema({
     parentId: String,   //公司账号id
     departmentId: String,   //部门id
     userId: String,     //销售账号id
+    nickName: String,     //昵称
     customerId: String,
     orderid: String,
     mailno: String,
