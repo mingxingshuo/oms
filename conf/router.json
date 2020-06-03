@@ -52,6 +52,17 @@
                     "path": "/admin/sales/customer/list"
                 }
             ]
+        }, {
+            "keyIndex": "setting",
+            "title": "默认配置",
+            "icon": "iconsetting",
+            "subMenuList": [
+                {
+                    "keyIndex": "info",
+                    "title": "寄件信息",
+                    "path": "/admin/setting/info"
+                }
+            ]
         }
     ],
     "1": [
