@@ -9,12 +9,14 @@ const OrderModel = require('../model/Order');
 const ReviewOrderModel = require('../model/reviewOrder');
 const checkHasAccountId = require("../util/checkHasAccountId");
 const jwt = require("../util/jsonwebtoken");
+const fs = require('fs')
+const send = require('koa-send');
 
 router.prefix('/order')
 
-router.all("*", async(ctx, next) => {
-    await checkHasAccountId(ctx, next);
-});
+// router.all("*", async(ctx, next) => {
+//     await checkHasAccountId(ctx, next);
+// });
 
 var checkword = "QE4CwVWGy1lBBIW5uoYFsZEwfyI7ScuU"
 
@@ -201,7 +203,7 @@ router.get('/review', async function (ctx, next) {
 
 
 router.get('/find', async function (ctx, next) {
-    let {orderid, customerId, page = 1} = ctx.request.query;
+    let {csv = '', orderid, customerId, page = 1} = ctx.request.query;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
         .then(async({role, parentId, departmentId, _id}) => {
@@ -229,11 +231,28 @@ router.get('/find', async function (ctx, next) {
                 }
                 let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort(sort)
                 let count = await OrderModel.count(sql)
-                if (orders.length > 0) {
-                    ctx.body = {code: 1, msg: '查询成功', data: orders, count: count}
+                if (csv) {
+                    let name = Date.now() + '.csv'
+                    const ws = fs.createWriteStream(__dirname + '/../data_file/' + name, {
+                        flags: 'w',
+                        highWaterMark: 2
+                    });
+                    ws.write("orderid,mailno,j_company,j_contact\r\n", () => {
+                    });
+                    for (let i of orders) {
+                        ws.write(i.orderid + "," + i.mailno + "," + i.j_company + "," + i.j_contact + "\r\n", () => {
+                        });
+                    }
+                    ws.end('')
+                    ctx.set('Content-disposition', 'attachment; filename=' + name);
+                    await send(ctx, '/data_file/' + name);
                 } else {
-                    ctx.response.status = 404;
-                    ctx.body = {code: -1, msg: '没有查询到相关数据'}
+                    if (orders.length > 0) {
+                        ctx.body = {code: 1, msg: '查询成功', data: orders, count: count}
+                    } else {
+                        ctx.response.status = 404;
+                        ctx.body = {code: -1, msg: '没有查询到相关数据'}
+                    }
                 }
             } else {
                 ctx.response.status = 403;
@@ -372,6 +391,24 @@ router.post('/OrderState', async function (ctx, next) {
         });
     });
     ctx.body = '<?xml version="1.0" encoding="UTF-8" ?> <Response> <success>true</success> </Response>'
+})
+
+router.get('/test', async function (ctx, next) {
+    let data = []
+    let name = Date.now() + '.csv'
+    const ws = fs.createWriteStream(__dirname + '/../data_file/' + name, {
+        flags: 'w',
+        highWaterMark: 2
+    });
+    ws.write("j_contact,j_tel\r\n", () => {
+    });
+    for (let i of data) {
+        ws.write(i.j_contact + "," + i.j_tel + "\r\n", () => {
+        });
+    }
+    ws.end('')
+    ctx.set('Content-disposition', 'attachment; filename=' + name);
+    await send(ctx, '/data_file/' + name);
 })
 
 function req(data) {
