@@ -67,7 +67,7 @@ router.get('/', async(ctx, next) => {
                 sql['$or'] = [{wxName: {$regex: new RegExp(name)}}, {d_contact: {$regex: new RegExp(name)}}]
             }
             let result = await CustomerModel.find(sql).skip((page - 1) * 10).limit(10);
-            let count = await CustomerModel.estimatedDocumentCount(sql);
+            let count = await CustomerModel.count(sql);
             if (result.length > 0) {
                 ctx.body = {code: 1, msg: '查询成功', data: result, count}
             } else {
