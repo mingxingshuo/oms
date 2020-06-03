@@ -14,6 +14,7 @@ const customer = require('./routes/customer');
 const wechat = require('./routes/wechat');
 const department = require('./routes/department');
 const pay = require('./routes/pay');
+const setting = require('./routes/setting');
 
 // error handler
 onerror(app);
@@ -50,6 +51,7 @@ app.use(customer.routes(), customer.allowedMethods());
 app.use(wechat.routes(), wechat.allowedMethods());
 app.use(department.routes(), department.allowedMethods());
 app.use(pay.routes(), pay.allowedMethods());
+app.use(setting.routes(), setting.allowedMethods());
 
 
 // error-handling
