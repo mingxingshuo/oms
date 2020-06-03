@@ -233,7 +233,7 @@ router.get('/find', async function (ctx, next) {
                 let count = await OrderModel.count(sql)
                 if (csv) {
                     let name = Date.now() + '.csv'
-                    const ws = fs.createWriteStream(__dirname + '/../data_file/' + name, {
+                    const ws = fs.createWriteStream(__dirname + '/../public/data_file/' + name, {
                         flags: 'w',
                         highWaterMark: 2
                     });
@@ -245,7 +245,7 @@ router.get('/find', async function (ctx, next) {
                     }
                     ws.end('')
                     ctx.set('Content-disposition', 'attachment; filename=' + name);
-                    await send(ctx, '/data_file/' + name);
+                    await send(ctx, '/public/data_file/' + name);
                 } else {
                     if (orders.length > 0) {
                         ctx.body = {code: 1, msg: '查询成功', data: orders, count: count}
@@ -394,9 +394,9 @@ router.post('/OrderState', async function (ctx, next) {
 })
 
 router.get('/test', async function (ctx, next) {
-    let data = []
+    let data = await OrderModel.find()
     let name = Date.now() + '.csv'
-    const ws = fs.createWriteStream(__dirname + '/../data_file/' + name, {
+    const ws = fs.createWriteStream(__dirname + '/../public/data_file/' + name, {
         flags: 'w',
         highWaterMark: 2
     });
@@ -408,7 +408,7 @@ router.get('/test', async function (ctx, next) {
     }
     ws.end('')
     ctx.set('Content-disposition', 'attachment; filename=' + name);
-    await send(ctx, '/data_file/' + name);
+    await send(ctx, '/public/data_file/' + name);
 })
 
 function req(data) {
