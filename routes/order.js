@@ -202,7 +202,7 @@ router.get('/review', async function (ctx, next) {
 
 
 router.get('/find', async function (ctx, next) {
-    let {csv = '', nickName, isReview, isSub, orderid, customerId, page = 1} = ctx.request.query;
+    let {csv = '', userId, isReview, isSub, orderid, customerId, page = 1} = ctx.request.query;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
         .then(async({role, parentId, departmentId, _id}) => {
@@ -224,8 +224,8 @@ router.get('/find', async function (ctx, next) {
                 if (orderid) {
                     sql['orderid'] = orderid
                 }
-                if (nickName) {
-                    sql['nickName'] = nickName
+                if (userId) {
+                    sql['userId'] = userId
                 }
                 if (isReview) {
                     sql['isReview'] = isReview
