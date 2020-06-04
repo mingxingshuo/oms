@@ -10,7 +10,6 @@ const ReviewOrderModel = require('../model/reviewOrder');
 const checkHasAccountId = require("../util/checkHasAccountId");
 const jwt = require("../util/jsonwebtoken");
 const fs = require('fs')
-const send = require('koa-send');
 
 router.prefix('/order')
 
@@ -241,15 +240,16 @@ router.get('/find', async function (ctx, next) {
                 if (csv) {
                     let data = await OrderModel.find(sql).sort(sort)
                     let name = Date.now() + '.csv'
+                    console.log('http://n.nyzda.top'+__dirname + '/../public/data_file/')
                     const ws = fs.createWriteStream(__dirname + '/../public/data_file/' + name, {
                         flags: 'w',
                         highWaterMark: 2
                     });
-                    ws.write("客户姓名,顺丰运单号,订单状态,下单状态\r\n", () => {
+                    ws.write("客户姓名,顺丰运单号,订单状态,下单状态,寄件人公司名称,寄件人姓名,寄件人联系电话,寄件人详细地址,收件人公司名称,收件人姓名,收件人联系电话,收件人详细地址,是否代收货款,代收货款金额,代收货款卡号,下单时间,最近一次修改,上门取件时间\r\n", () => {
                     });
                     for (let i of data) {
                         let mailno = i.mailno
-                        if(!mailno){
+                        if (!mailno) {
                             mailno = "下单后即可生成运单号"
                         }
                         let isReview = "未审核"
@@ -260,12 +260,20 @@ router.get('/find', async function (ctx, next) {
                         if (i.isSub) {
                             isSub = "已下单"
                         }
-                        ws.write(i.nickName + "," + i.mailno + "," + isReview + "," + isSub+ "\r\n", () => {
+                        let cod = "否"
+                        let cod_count = 0
+                        let cod_card = 0
+                        if (i.AddedService.length > 0) {
+                            cod = "是"
+                            cod_count = i.AddedService[0].value
+                            cod_card = i.AddedService[0].value1
+                        }
+                        ws.write(i.nickName + "," + mailno + "," + isReview + "," + isSub + "," + i.j_company + "," + i.j_contact + "," + i.j_tel + "," + i.j_address + "," + i.d_company + "," + i.d_contact + "," + i.d_tel + "," + i.d_address + "," + cod + "," + cod_count + "," + cod_card + "," + getDay(i.createAt) + "," + getDay(i.updateAt) + "," + getDay(i.sendstarttime) + "\r\n", () => {
                         });
                     }
                     ws.end('')
                     ctx.set('Content-disposition', 'attachment; filename=' + name);
-                    await send(ctx, '/public/data_file/' + name);
+                    ctx.body = ({url: 'http://n.nyzda.top'+__dirname + '../public/data_file/' + name});
                 } else {
                     let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort(sort)
                     let count = await OrderModel.count(sql)
@@ -281,24 +289,6 @@ router.get('/find', async function (ctx, next) {
                 ctx.body = {code: -1, msg: "该账户无操作权限"}
             }
         })
-})
-
-router.get('/test', async function (ctx, next) {
-    let data = await OrderModel.find({}).sort({})
-    let name = Date.now() + '.csv'
-    const ws = fs.createWriteStream(__dirname + '/../public/data_file/' + name, {
-        flags: 'w',
-        highWaterMark: 2
-    });
-    ws.write("客户姓名\r\n", () => {
-    });
-    for (let i of data) {
-        ws.write(i.nickName+ "\r\n", () => {
-        });
-    }
-    ws.end('')
-    ctx.set('Content-disposition', 'attachment; filename=' + name);
-    await send(ctx, '/public/data_file/' + name);
 })
 
 router.get('/OrderSearch', async function (ctx, next) {
@@ -432,6 +422,14 @@ router.post('/OrderState', async function (ctx, next) {
     });
     ctx.body = '<?xml version="1.0" encoding="UTF-8" ?> <Response> <success>true</success> </Response>'
 })
+
+function getDay(time) {
+    let date = new Date(time)
+    let weekArray = new Array("日", "一", "二", "三", "四", "五", "六")
+    let week = weekArray[date.getDay()]
+    let str = date.getFullYear() + "年" + (date.getMonth() + 1) + "月" + date.getDate() + "日 星期" + week + " " + (date.getHours() > 10 ? date.getHours() : '0' + date.getHours()) + ':' + (date.getMinutes() > 10 ? date.getMinutes() : '0' + date.getMinutes())
+    return str;
+}
 
 function req(data) {
     return new Promise((resolve, reject) => {
