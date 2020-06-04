@@ -274,6 +274,7 @@ router.get('/find', async function (ctx, next) {
                     ctx.set('Content-disposition', 'attachment; filename=' + name);
                     ctx.body = ({url: 'http://n.nyzda.top/data_file/' + name});
                 } else {
+                    console.log(sql,'---------------------sql')
                     let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort(sort)
                     let count = await OrderModel.count(sql)
                     if (orders.length > 0) {

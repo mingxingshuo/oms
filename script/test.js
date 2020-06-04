@@ -5,6 +5,7 @@ const builder = new xml2js.Builder();
 const parser = new xml2js.Parser();
 const OrderModel = require('../model/Order');
 const PayModel = require('../model/Pay');
+const fs = require('fs')
 
 async function a() {
     // let b = await OrderModel.findByIdAndUpdate('5ebbed72b168fe5fe47c7545', {parentId: '5ec63dc9e3f98c7b166139e4', departmentId: '5ec75afbbb4be93d24a57897', userId: '5ea9557f1808c716481ee8b3'},{new:true})
@@ -14,7 +15,7 @@ async function a() {
     //     info:[{type: "代收收款", money: 11, url: ""}],
     //     sum:11
     // }, {upsert: true, new: true});
-    console.log(JSON.stringify(b), '---------------------b')
+    console.log(b, '---------------------b')
 }
 a()
 // function md5(str) {
@@ -60,3 +61,22 @@ async function test() {
     console.log(xml, '-------------------------data')
 }
 // test()
+async function b() {
+    let data = await OrderModel.find().limit(2)
+    let name = Date.now() + '.csv'
+    const ws = fs.createWriteStream(__dirname + '/../public/data_file/' + name, {
+        flags: 'w',
+        highWaterMark: 2
+    });
+    ws.write("客户姓名,顺丰运单号\r\n", () => {
+    });
+    for (let i of data) {
+        ws.write(i.nickName + "," + i.Cargo.name + "\r\n", () => {
+        });
+        for(let j of i.Cargo){
+            ws.write("" + "," + i.Cargo.name + "\r\n", () => {
+            });
+        }
+    }
+}
+// b()
