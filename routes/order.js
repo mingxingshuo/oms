@@ -234,7 +234,7 @@ router.get('/find', async function (ctx, next) {
                     sql['isSub'] = isSub
                 }
                 if (customerId) {
-                    sql = {customerId: customerId}
+                    sql['customerId'] = customerId
                     sort = {updateAt: -1}
                 }
                 if (csv) {
