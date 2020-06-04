@@ -240,7 +240,6 @@ router.get('/find', async function (ctx, next) {
                 if (csv) {
                     let data = await OrderModel.find(sql).sort(sort)
                     let name = Date.now() + '.csv'
-                    console.log('http://n.nyzda.top'+__dirname + '/../public/data_file/')
                     const ws = fs.createWriteStream(__dirname + '/../public/data_file/' + name, {
                         flags: 'w',
                         highWaterMark: 2
