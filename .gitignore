@@ -3,5 +3,6 @@
 /public/images/tuiguang/
 /public/qr_image
 /public/uploads
+/public/data_file
 /.idea
 .DS_Store
