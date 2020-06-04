@@ -3,16 +3,18 @@ const crypto = require("crypto");
 const xml2js = require("xml2js");
 const builder = new xml2js.Builder();
 const parser = new xml2js.Parser();
+const OrderModel = require('../model/Order');
 const PayModel = require('../model/Pay');
 
 async function a() {
     // let b = await OrderModel.findByIdAndUpdate('5ebbed72b168fe5fe47c7545', {parentId: '5ec63dc9e3f98c7b166139e4', departmentId: '5ec75afbbb4be93d24a57897', userId: '5ea9557f1808c716481ee8b3'},{new:true})
-    let b = await PayModel.find({orderid:'GQ2020060215910815021700929'})
+    // let b = await OrderModel.update({userId:'5ea9557f1808c716481ee8b3'},{nickName:'测试'},{multi:true})
+    let b = await OrderModel.find({userId:'5ea9557f1808c716481ee8b3'})
     // let b = await PayModel.findOneAndUpdate({orderid:'GQ2020051315893651260870224'}, {
     //     info:[{type: "代收收款", money: 11, url: ""}],
     //     sum:11
     // }, {upsert: true, new: true});
-    console.log(b, '---------------------b')
+    console.log(JSON.stringify(b), '---------------------b')
 }
 a()
 // function md5(str) {

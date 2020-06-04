@@ -203,7 +203,7 @@ router.get('/review', async function (ctx, next) {
 
 
 router.get('/find', async function (ctx, next) {
-    let {csv = '', orderid, customerId, page = 1} = ctx.request.query;
+    let {csv = '', nickName, isReview, isSub, orderid, customerId, page = 1} = ctx.request.query;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
         .then(async({role, parentId, departmentId, _id}) => {
@@ -225,12 +225,19 @@ router.get('/find', async function (ctx, next) {
                 if (orderid) {
                     sql['orderid'] = orderid
                 }
+                if (nickName) {
+                    sql['nickName'] = nickName
+                }
+                if (isReview) {
+                    sql['isReview'] = isReview
+                }
+                if (isSub) {
+                    sql['isSub'] = isSub
+                }
                 if (customerId) {
                     sql = {customerId: customerId}
                     sort = {updateAt: -1}
                 }
-                let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort(sort)
-                let count = await OrderModel.count(sql)
                 if (csv) {
                     let data = await OrderModel.find(sql).sort(sort)
                     let name = Date.now() + '.csv'
@@ -238,16 +245,30 @@ router.get('/find', async function (ctx, next) {
                         flags: 'w',
                         highWaterMark: 2
                     });
-                    ws.write("orderid,mailno,j_company,j_contact\r\n", () => {
+                    ws.write("客户姓名,顺丰运单号,订单状态,下单状态\r\n", () => {
                     });
                     for (let i of data) {
-                        ws.write(i.orderid + "," + i.mailno + "," + i.j_company + "," + i.j_contact + "\r\n", () => {
+                        let mailno = i.mailno
+                        if(!mailno){
+                            mailno = "下单后即可生成运单号"
+                        }
+                        let isReview = "未审核"
+                        if (i.isReview) {
+                            isReview = "已审核"
+                        }
+                        let isSub = "未下单"
+                        if (i.isSub) {
+                            isSub = "已下单"
+                        }
+                        ws.write(i.nickName + "," + i.mailno + "," + isReview + "," + isSub+ "\r\n", () => {
                         });
                     }
                     ws.end('')
                     ctx.set('Content-disposition', 'attachment; filename=' + name);
                     await send(ctx, '/public/data_file/' + name);
                 } else {
+                    let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort(sort)
+                    let count = await OrderModel.count(sql)
                     if (orders.length > 0) {
                         ctx.body = {code: 1, msg: '查询成功', data: orders, count: count}
                     } else {
@@ -260,6 +281,24 @@ router.get('/find', async function (ctx, next) {
                 ctx.body = {code: -1, msg: "该账户无操作权限"}
             }
         })
+})
+
+router.get('/test', async function (ctx, next) {
+    let data = await OrderModel.find({}).sort({})
+    let name = Date.now() + '.csv'
+    const ws = fs.createWriteStream(__dirname + '/../public/data_file/' + name, {
+        flags: 'w',
+        highWaterMark: 2
+    });
+    ws.write("客户姓名\r\n", () => {
+    });
+    for (let i of data) {
+        ws.write(i.nickName+ "\r\n", () => {
+        });
+    }
+    ws.end('')
+    ctx.set('Content-disposition', 'attachment; filename=' + name);
+    await send(ctx, '/public/data_file/' + name);
 })
 
 router.get('/OrderSearch', async function (ctx, next) {
@@ -392,24 +431,6 @@ router.post('/OrderState', async function (ctx, next) {
         });
     });
     ctx.body = '<?xml version="1.0" encoding="UTF-8" ?> <Response> <success>true</success> </Response>'
-})
-
-router.get('/test', async function (ctx, next) {
-    let data = await OrderModel.find()
-    let name = Date.now() + '.csv'
-    const ws = fs.createWriteStream(__dirname + '/../public/data_file/' + name, {
-        flags: 'w',
-        highWaterMark: 2
-    });
-    ws.write("j_contact,j_tel\r\n", () => {
-    });
-    for (let i of data) {
-        ws.write(i.j_contact + "," + i.j_tel + "\r\n", () => {
-        });
-    }
-    ws.end('')
-    ctx.set('Content-disposition', 'attachment; filename=' + name);
-    await send(ctx, '/public/data_file/' + name);
 })
 
 function req(data) {
