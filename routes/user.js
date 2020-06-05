@@ -34,7 +34,7 @@ router.post('/', async (ctx, next) => {
     let {username, password, remarks, nickName, departmentId, departmentName} = ctx.request.body;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async ({userRole, _id}) => {
+        .then(async ({role: userRole, _id}) => {
             let result = await UserModel.find({username, parentId: _id});
             if (result.length > 0) {
                 ctx.body = {code: 2, msg: "该账户名已存在，请检查输入是否有误"}
@@ -67,7 +67,7 @@ router.get('/', async (ctx, next) => {
     let {username, role, page = 1} = ctx.query, result, total;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async ({userRole, _id, departmentId}) => {
+        .then(async ({role: userRole, _id, departmentId}) => {
             let sql = {parentId: _id}, sortOptions, otherOptions = {};
             if (userRole !== 2) {
                 if (username) {
@@ -82,7 +82,6 @@ router.get('/', async (ctx, next) => {
                         departmentId
                     }
                 }
-                console.log(sql, sortOptions, otherOptions, "---------------------------get_user");
                 result = await UserModel.find(sql).skip(otherOptions.skip).limit(otherOptions.limit).sort(sortOptions);
                 total = await UserModel.count(sql);
                 ctx.body = {code: 1, msg: '查询成功', data: result, total}
