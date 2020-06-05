@@ -244,7 +244,7 @@ router.get('/find', async function (ctx, next) {
                         flags: 'w',
                         highWaterMark: 2
                     });
-                    ws.write("客户姓名,顺丰运单号,订单状态,下单状态,寄件人公司名称,寄件人姓名,寄件人联系电话,寄件人详细地址,收件人公司名称,收件人姓名,收件人联系电话,收件人详细地址,是否代收货款,代收货款金额,代收货款卡号,下单时间,最近一次修改,上门取件时间\r\n", () => {
+                    ws.write("客户姓名,顺丰运单号,货品名称,货品数量,订单状态,下单状态,寄件人公司名称,寄件人姓名,寄件人联系电话,寄件人详细地址,收件人公司名称,收件人姓名,收件人联系电话,收件人详细地址,是否代收货款,代收货款金额,代收货款卡号,下单时间,最近一次修改,上门取件时间\r\n", () => {
                     });
                     for (let i of data) {
                         let mailno = i.mailno
@@ -267,14 +267,18 @@ router.get('/find', async function (ctx, next) {
                             cod_count = i.AddedService[0].value
                             cod_card = i.AddedService[0].value1
                         }
-                        ws.write(i.nickName + "," + mailno + "," + isReview + "," + isSub + "," + i.j_company + "," + i.j_contact + "," + i.j_tel + "," + i.j_address + "," + i.d_company + "," + i.d_contact + "," + i.d_tel + "," + i.d_address + "," + cod + "," + cod_count + "," + cod_card + "," + getDay(i.createAt) + "," + getDay(i.updateAt) + "," + getDay(i.sendstarttime) + "\r\n", () => {
+                        ws.write(i.nickName + "," + mailno + ","  + i.Cargo[0].name + "," + i.Cargo[0].count + ","+ isReview + "," + isSub + "," + i.j_company + "," + i.j_contact + "," + i.j_tel + "," + i.j_address + "," + i.d_company + "," + i.d_contact + "," + i.d_tel + "," + i.d_address + "," + cod + "," + cod_count + "," + cod_card + "," + getDay(i.createAt) + "," + getDay(i.updateAt) + "," + getDay(i.sendstarttime) + "\r\n", () => {
                         });
+                        for (let j = 1; j < i.Cargo.length; j++) {
+                            ws.write(",," + i.Cargo[j]['name'] + "," + i.Cargo[j]['count'] + "\r\n", () => {
+                            });
+                        }
                     }
                     ws.end('')
                     ctx.set('Content-disposition', 'attachment; filename=' + name);
                     ctx.body = ({url: 'http://n.nyzda.top/data_file/' + name});
                 } else {
-                    console.log(sql,'---------------------sql')
+                    console.log(sql, '---------------------sql')
                     let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort(sort)
                     let count = await OrderModel.count(sql)
                     if (orders.length > 0) {
