@@ -21,7 +21,7 @@ var checkword = "QE4CwVWGy1lBBIW5uoYFsZEwfyI7ScuU"
 
 router.post('/create', async function (ctx, next) {
     let {
-        customerId, orderid, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
+        customerId, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
         d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
         pay_method, express_type, parcel_quantity, cargo_length, cargo_width, cargo_height, volume,
         cargo_total_weight, sendstarttime, is_docall = 1, need_return_tracking_no, return_tracking,
@@ -38,8 +38,8 @@ router.post('/create', async function (ctx, next) {
                     departmentId: departmentId,
                     userId: _id,
                     nickName: nickName,
+                    orderid: randomOrderId(),
                     customerId,
-                    orderid,
                     j_company,
                     j_contact,
                     j_tel,
@@ -99,7 +99,7 @@ router.post('/create', async function (ctx, next) {
 
 router.post('/update', async function (ctx, next) {
     let {
-        id, orderid, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
+        id, j_company, j_contact, j_tel, j_mobile, j_province, j_city, j_county, j_address,
         d_company, d_contact, d_tel, d_mobile, d_province, d_city, d_county, d_address, custid,
         pay_method, express_type, parcel_quantity, cargo_length, cargo_width, cargo_height, volume,
         cargo_total_weight, sendstarttime, is_docall = 1, need_return_tracking_no, return_tracking,
@@ -112,7 +112,6 @@ router.post('/update', async function (ctx, next) {
         .then(async({role}) => {
             if (role === 2) {
                 let body = await OrderModel.findByIdAndUpdate(id, {
-                    orderid,
                     j_company,
                     j_contact,
                     j_tel,
@@ -524,6 +523,13 @@ function getDay(time) {
     let week = weekArray[date.getDay()]
     let str = date.getFullYear() + "年" + (date.getMonth() + 1) + "月" + date.getDate() + "日 星期" + week + " " + (date.getHours() > 10 ? date.getHours() : '0' + date.getHours()) + ':' + (date.getMinutes() > 10 ? date.getMinutes() : '0' + date.getMinutes())
     return str;
+}
+
+function randomOrderId() {
+    let randomNum = Math.ceil(Math.random() * (1000 - 1)), orderid;
+    randomNum = (Array(4).join(0) + randomNum).slice(-4);
+    orderid = 'GQ' + moment(Date.now()).format('YYYYMMDD') + Date.now() + randomNum;
+    return orderid
 }
 
 function req(data) {
