@@ -68,11 +68,12 @@ router.get('/', async (ctx, next) => {
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
         .then(async ({userRole, _id, departmentId, parentId}) => {
-            let sql = {parentId: _id}, sortOptions;
+            let sql = {parentId: _id}, sortOptions, otherOptions = {};
             if (userRole !== 2) {
                 if (username) {
                     sql.username = {$regex: new RegExp(username)};
                     sortOptions = {role: -1, _id: -1};
+                    otherOptions = {skip: (page - 1) * 10, limit: 10};
                 } else if (role) {
                     // 查询所有role = 2的用户
                     sql.role = role;
@@ -82,7 +83,7 @@ router.get('/', async (ctx, next) => {
                         departmentId
                     }
                 }
-                result = await UserModel.find(sql).skip((page - 1) * 10).limit(10).sort(sortOptions);
+                result = await UserModel.find(sql).skip(otherOptions.skip).limit(otherOptions.limit).sort(sortOptions);
                 total = await UserModel.count(sql);
                 ctx.body = {code: 1, msg: '查询成功', data: result, total}
             } else {
