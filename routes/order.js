@@ -201,7 +201,7 @@ router.get('/review', async function (ctx, next) {
     }
 })
 
-router.get('/submit', async function (ctx, next) {
+router.post('/submit', async function (ctx, next) {
     let {orderids} = ctx.request.query
     for (let orderid of orderids) {
         let order = await ReviewOrderModel.findOne({orderid: orderid})
