@@ -202,7 +202,7 @@ router.get('/review', async function (ctx, next) {
 })
 
 router.post('/submit', async function (ctx, next) {
-    let {orderids} = ctx.request.query
+    let {orderids} = ctx.request.body
     for (let orderid of orderids) {
         let order = await ReviewOrderModel.findOne({orderid: orderid})
         let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
