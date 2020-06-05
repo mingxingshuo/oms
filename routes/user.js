@@ -67,7 +67,7 @@ router.get('/', async (ctx, next) => {
     let {username, role, page = 1} = ctx.query, result, total;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async ({userRole, _id, departmentId, parentId}) => {
+        .then(async ({userRole, _id, departmentId}) => {
             let sql = {parentId: _id}, sortOptions, otherOptions = {};
             if (userRole !== 2) {
                 if (username) {
@@ -79,10 +79,10 @@ router.get('/', async (ctx, next) => {
                     sql.role = role;
                 } else if(userRole === 1) {
                     sql = {
-                        parentId,
                         departmentId
                     }
                 }
+                console.log(sql, sortOptions, otherOptions, "---------------------------get_user");
                 result = await UserModel.find(sql).skip(otherOptions.skip).limit(otherOptions.limit).sort(sortOptions);
                 total = await UserModel.count(sql);
                 ctx.body = {code: 1, msg: '查询成功', data: result, total}
