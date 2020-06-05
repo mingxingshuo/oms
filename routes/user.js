@@ -34,19 +34,19 @@ router.post('/', async (ctx, next) => {
     let {username, password, remarks, nickName, departmentId, departmentName} = ctx.request.body;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async userInfo => {
-            let result = await UserModel.find({username, parentId: userInfo._id});
+        .then(async ({role: userRole, _id}) => {
+            let result = await UserModel.find({username, parentId: _id});
             if (result.length > 0) {
                 ctx.body = {code: 2, msg: "该账户名已存在，请检查输入是否有误"}
             } else {
-                if (userInfo.role === 9999999999 || userInfo.role < 1) {
+                if (userRole === 9999999999 || userRole < 1) {
                     let data = await UserModel.create({
                         username,
                         nickName,
                         password,
                         role: 2,
                         remarks,
-                        parentId: userInfo._id,
+                        parentId: _id,
                         departmentId, departmentName
                     });
                     if (data) {
@@ -67,27 +67,22 @@ router.get('/', async (ctx, next) => {
     let {username, role, page = 1} = ctx.query, result, total;
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
-        .then(async userInfo => {
-            if (userInfo.role === 0 || userInfo.role === 9999999999) {
-                let sql = {}, sortOptions = {};
+        .then(async ({role: userRole, _id, departmentId}) => {
+            let sql = {parentId: _id}, sortOptions, otherOptions = {};
+            if (userRole !== 2) {
                 if (username) {
-                    sql = {
-                        username: {$regex: new RegExp(username)},
-                        parentId: userInfo._id
-                    };
-                    sortOptions = {role: -1, _id: -1}
+                    sql.username = {$regex: new RegExp(username)};
+                    sortOptions = {role: -1, _id: -1};
+                    otherOptions = {skip: (page - 1) * 10, limit: 10};
                 } else if (role) {
                     // 查询所有role = 2的用户
+                    sql.role = role;
+                } else if(userRole === 1) {
                     sql = {
-                        parentId: userInfo._id,
-                        role
-                    }
-                } else {
-                    sql = {
-                        parentId: userInfo._id
+                        departmentId
                     }
                 }
-                result = await UserModel.find(sql).skip((page - 1) * 10).limit(10).sort(sortOptions);
+                result = await UserModel.find(sql).skip(otherOptions.skip).limit(otherOptions.limit).sort(sortOptions);
                 total = await UserModel.count(sql);
                 ctx.body = {code: 1, msg: '查询成功', data: result, total}
             } else {
