@@ -275,7 +275,6 @@ router.get('/find', async function (ctx, next) {
                         }
                     }
                     ws.end('')
-                    ctx.set('Content-disposition', 'attachment; filename=' + name);
                     ctx.body = ({url: 'http://n.nyzda.top/data_file/' + name});
                 } else {
                     console.log(sql, '---------------------sql')
