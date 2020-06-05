@@ -52,7 +52,8 @@ var OrderSchema = new Schema({
     orderStateDesc: String,
     Cargo: Array,
     AddedService: Array,
-    isError: {type: Number, default: 1}, //1正确， 2错误
+    isSub: {type: Number, default: 0}, //0未下单，1已下单
+    isError: {type: Number, default: 0}, //0正确， 1错误
     errorMsg: String,
     createAt: {
         type: Number,

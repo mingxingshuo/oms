@@ -200,6 +200,98 @@ router.get('/review', async function (ctx, next) {
     }
 })
 
+router.get('/submit', async function (ctx, next) {
+    let {orderids} = ctx.request.query
+    for (let orderid of orderids) {
+        let order = await ReviewOrderModel.findOne({orderid: orderid})
+        let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
+        let xml = {
+            Request: {
+                $: {service: 'OrderService', lang: 'zh-CN'},
+                Head: 'MXSBJKJ',
+                Body: {
+                    Order: {
+                        $: {
+                            orderid: orderid,
+                            j_company: order.j_company,
+                            j_contact: order.j_contact,
+                            j_tel: order.j_tel,
+                            j_mobile: order.j_mobile,
+                            j_province: order.j_province,
+                            j_city: order.j_city,
+                            j_county: order.j_county,
+                            j_address: order.j_address,
+                            d_company: order.d_company,
+                            d_contact: order.d_contact,
+                            d_tel: order.d_tel,
+                            d_mobile: order.d_mobile,
+                            d_province: order.d_province,
+                            d_city: order.d_city,
+                            d_county: order.d_county,
+                            d_address: order.d_address,
+                            custid: order.custid,
+                            pay_method: order.pay_method,
+                            express_type: order.express_type,
+                            parcel_quantity: order.parcel_quantity,
+                            cargo_length: order.cargo_length,
+                            cargo_width: order.cargo_width,
+                            cargo_height: order.cargo_height,
+                            volume: order.volume,
+                            cargo_total_weight: order.cargo_total_weight,
+                            sendstarttime: order.sendstarttime,
+                            is_docall: order.is_docall,
+                            return_tracking: order.return_tracking,
+                            temp_range: order.temp_range,
+                            template: order.template,
+                            remark: order.remark,
+                            oneself_pickup_flg: order.oneself_pickup_flg,
+                            special_delivery_type_code: order.special_delivery_type_code,
+                            special_delivery_value: order.special_delivery_value,
+                            realname_num: order.realname_num,
+                            routelabelForReturn: order.routelabelForReturn,
+                            routelabelService: order.routelabelService,
+                            is_unified_waybill_no: order.is_unified_waybill_no
+                        }
+                    }
+                }
+            }
+        }
+        let cargos = []
+        for (let i of order.Cargo) {
+            cargos.push({$: i})
+        }
+        xml['Request']['Body']['Order']['Cargo'] = cargos
+
+        if (order.AddedService.length > 0) {
+            let addeds = []
+            for (let j of order.AddedService) {
+                addeds.push({$: j})
+            }
+            xml['Request']['Body']['Order']['AddedService'] = {}
+            xml['Request']['Body']['Order']['AddedService'] = addeds
+        }
+        console.log(JSON.stringify(xml), '-----------------------json')
+        xml = builder.buildObject(xml)
+        console.log(xml, '-----------------------xml')
+        let str = md5(xml + checkword)
+        let data = {
+            form: {
+                xml: xml,
+                verifyCode: str
+            }
+        }
+        let result = await req(url, data)
+        console.log(JSON.stringify(result), '-------------------------result')
+        if (result.type == 2) {
+            let mailno = result['data']['$']['mailno']
+            await OrderModel.update({orderid: orderid}, {mailno: mailno, isSub: 1})
+            await ReviewOrderModel.update({orderid: orderid}, {isSub: 1})
+        } else {
+            await ReviewOrderModel.update({orderid: orderid}, {isError: 1, errorMsg: result.data._})
+        }
+        ctx.body = {code: 1, msg: '订单提交成功'}
+    }
+})
 
 router.get('/find', async function (ctx, next) {
     let {csv = '', userId, isReview, isSub, orderid, customerId, page = 1} = ctx.request.query;
@@ -267,7 +359,7 @@ router.get('/find', async function (ctx, next) {
                             cod_count = i.AddedService[0].value
                             cod_card = i.AddedService[0].value1
                         }
-                        ws.write(i.nickName + "," + mailno + ","  + i.Cargo[0].name + "," + i.Cargo[0].count + ","+ isReview + "," + isSub + "," + i.j_company + "," + i.j_contact + "," + i.j_tel + "," + i.j_address + "," + i.d_company + "," + i.d_contact + "," + i.d_tel + "," + i.d_address + "," + cod + "," + cod_count + "," + cod_card + "," + getDay(i.createAt) + "," + getDay(i.updateAt) + "," + getDay(i.sendstarttime) + "\r\n", () => {
+                        ws.write(i.nickName + "," + mailno + "," + i.Cargo[0].name + "," + i.Cargo[0].count + "," + isReview + "," + isSub + "," + i.j_company + "," + i.j_contact + "," + i.j_tel + "," + i.j_address + "," + i.d_company + "," + i.d_contact + "," + i.d_tel + "," + i.d_address + "," + cod + "," + cod_count + "," + cod_card + "," + getDay(i.createAt) + "," + getDay(i.updateAt) + "," + getDay(i.sendstarttime) + "\r\n", () => {
                         });
                         for (let j = 1; j < i.Cargo.length; j++) {
                             ws.write(",," + i.Cargo[j]['name'] + "," + i.Cargo[j]['count'] + "\r\n", () => {
