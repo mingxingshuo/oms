@@ -29,6 +29,7 @@ router.post('/create', async function (ctx, next) {
         temp_range, template, remark, oneself_pickup_flg, special_delivery_type_code,
         special_delivery_value, realname_num, routelabelForReturn, routelabelService, is_unified_waybill_no
     } = ctx.request.body || ""
+    let orderid = randomOrderId()
     let {Cargo = [], AddedService = []} = ctx.request.body
     let {token} = ctx.request.header;
     await jwt.checkToken(token)
@@ -39,7 +40,7 @@ router.post('/create', async function (ctx, next) {
                     departmentId: departmentId,
                     userId: _id,
                     nickName: nickName,
-                    orderid: randomOrderId(),
+                    orderid: orderid,
                     customerId,
                     j_company,
                     j_contact,
@@ -86,7 +87,7 @@ router.post('/create', async function (ctx, next) {
                     updateAt: Date.now()
                 })
                 if (body) {
-                    ctx.body = {code: 1, msg: '订单创建成功'}
+                    ctx.body = {code: 1, msg: '订单创建成功', orderid: orderid}
                 } else {
                     ctx.response.status = 400;
                     ctx.body = {code: -1, msg: '订单创建失败，请重试'}
