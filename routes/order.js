@@ -273,9 +273,7 @@ router.post('/submit', async function (ctx, next) {
             xml['Request']['Body']['Order']['AddedService'] = {}
             xml['Request']['Body']['Order']['AddedService'] = addeds
         }
-        console.log(JSON.stringify(xml), '-----------------------json')
         xml = builder.buildObject(xml)
-        console.log(xml, '-----------------------xml')
         let str = md5(xml + checkword)
         let data = {
             form: {
@@ -540,13 +538,10 @@ function req(data) {
     return new Promise((resolve, reject) => {
         let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
         request.post(url, data, function (err, res, body) {
-            console.log(err, body, '-----------------------body')
             parser.parseString(body, function (err1, result) {
-                console.log(err1, result, '-----------------------result')
                 if (result.Response.ERROR) {
                     resolve({type: 1, data: result.Response.ERROR[0]})
                 } else {
-                    console.log(JSON.stringify(result.Response.Body), '----------------------Body')
                     if (JSON.stringify(result.Response.Body[0]).indexOf('OrderResponse') != -1) {
                         resolve({type: 2, data: result.Response.Body[0].OrderResponse[0]})
                     } else if (JSON.stringify(result.Response.Body[0]).indexOf('OrderConfirmResponse') != -1) {
