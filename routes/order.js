@@ -292,8 +292,8 @@ router.post('/submit', async function (ctx, next) {
         } else {
             await ReviewOrderModel.update({orderid: orderid}, {isError: 1, errorMsg: result.data._})
         }
-        ctx.body = {code: 1, msg: '订单提交成功'}
     }
+    ctx.body = {code: 1, msg: '订单提交成功'}
 })
 
 router.get('/find', async function (ctx, next) {

@@ -13,7 +13,7 @@ async function a() {
     // let b = await OrderModel.update({userId:'5ea9557f1808c716481ee8b3'},{nickName:'测试'},{multi:true})
     // let b = await OrderModel.find({orderid:'GQ2020060315911716389840235'})
     // let b = await ReviewOrderModel.find()
-    let b = await OrderModel.find({orderid:'GQ2020060215910815021700929'})
+    let b = await ReviewOrderModel.find({orderid:'GQ2020060215910815021700929'})
     // let b = await PayModel.findOneAndUpdate({orderid:'GQ2020051315893651260870224'}, {
     //     info:[{type: "代收收款", money: 11, url: ""}],
     //     sum:11
