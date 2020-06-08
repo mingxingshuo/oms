@@ -541,6 +541,7 @@ function req(data) {
     return new Promise((resolve, reject) => {
         let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
         request.post(url, data, function (err, res, body) {
+            console.log(err, res, body, '-----------------------result')
             parser.parseString(body, function (err1, result) {
                 console.log(err1, result, '-----------------------result')
                 if (result.Response.ERROR) {
