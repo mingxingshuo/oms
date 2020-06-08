@@ -203,8 +203,11 @@ router.get('/review', async function (ctx, next) {
 
 router.post('/submit', async function (ctx, next) {
     let {orderids} = ctx.request.body
+    console.log(orderids,'-------------------orderids')
     for (let orderid of orderids) {
+        console.log(orderid,'-------------------orderid')
         let order = await ReviewOrderModel.findOne({orderid: orderid})
+        console.log(order,'-------------------order')
         let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
         let xml = {
             Request: {

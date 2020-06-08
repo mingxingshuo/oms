@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 var connect_url = require('../conf/proj.json').mongodb;
 var db = mongoose.createConnection(connect_url);
 
-var OrderSchema = new Schema({
+var reviewOrderSchema = new Schema({
     account_id: String,
     customer_id: String,
     orderid: String,
@@ -65,5 +65,5 @@ var OrderSchema = new Schema({
     }
 });
 
-var OrderModel = db.model('Order', OrderSchema);
-module.exports = OrderModel;
+var reviewOrderModel = db.model('reviewOrder', reviewOrderSchema);
+module.exports = reviewOrderModel;
