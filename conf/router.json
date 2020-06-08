@@ -9,7 +9,7 @@
                 {
                     "keyIndex": "manage",
                     "title": "账户列表",
-                    "path": "/admin/user/manage"
+                    "path": "/user/manage"
                 }
             ],
             "title": "账户管理"
@@ -25,12 +25,12 @@
                 {
                     "keyIndex": "manage",
                     "title": "账户列表",
-                    "path": "/admin/user/manage"
+                    "path": "/user/manage"
                 },
                 {
                     "keyIndex": "department",
                     "title": "部门列表",
-                    "path": "/admin/user/department"
+                    "path": "/user/department"
                 }
             ]
         }, {
@@ -41,15 +41,15 @@
                 {
                     "keyIndex": "wechat",
                     "title": "微信号",
-                    "path": "/admin/sales/wechat/list"
+                    "path": "/sales/wechat/list"
                 }, {
                     "keyIndex": "order",
                     "title": "订单列表",
-                    "path": "/admin/sales/order/list"
+                    "path": "/sales/order/list"
                 }, {
                     "keyIndex": "customer",
                     "title": "客户列表",
-                    "path": "/admin/sales/customer/list"
+                    "path": "/sales/customer/list"
                 }
             ]
         }, {
@@ -60,7 +60,7 @@
                 {
                     "keyIndex": "info",
                     "title": "寄件信息",
-                    "path": "/admin/setting/info"
+                    "path": "/setting/info"
                 }
             ]
         }
@@ -74,7 +74,7 @@
                 {
                     "keyIndex": "order",
                     "title": "订单列表",
-                    "path": "/admin/sales/order/list"
+                    "path": "/sales/order/list"
                 }
             ]
         }
@@ -88,15 +88,15 @@
                 {
                     "keyIndex": "wechat",
                     "title": "我的微信号",
-                    "path": "/admin/sales/wechat/list"
+                    "path": "/sales/wechat/list"
                 }, {
                     "keyIndex": "order",
                     "title": "我的订单",
-                    "path": "/admin/sales/order/list"
+                    "path": "/sales/order/list"
                 }, {
                     "keyIndex": "customer",
                     "title": "我的客户",
-                    "path": "/admin/sales/customer/list"
+                    "path": "/sales/customer/list"
                 }
             ]
         }
