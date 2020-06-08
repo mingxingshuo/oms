@@ -203,11 +203,8 @@ router.get('/review', async function (ctx, next) {
 
 router.post('/submit', async function (ctx, next) {
     let {orderids} = ctx.request.body
-    console.log(orderids, '-------------------orderids')
     for (let orderid of orderids) {
-        console.log(orderid, '-------------------orderid')
         let order = await ReviewOrderModel.findOne({orderid: orderid})
-        console.log(order, '-------------------order')
         let xml = {
             Request: {
                 $: {service: 'OrderService', lang: 'zh-CN'},
@@ -282,13 +279,11 @@ router.post('/submit', async function (ctx, next) {
             }
         }
         let result = await req(data)
-        console.log(JSON.stringify(result), '-------------------------result')
         if (result.type == 2) {
             let mailno = result['data']['$']['mailno']
             await OrderModel.update({orderid: orderid}, {mailno: mailno, isSub: 1})
-            await ReviewOrderModel.update({orderid: orderid}, {isSub: 1})
         } else {
-            await ReviewOrderModel.update({orderid: orderid}, {isError: 1, errorMsg: result.data._})
+            await OrderModel.update({orderid: orderid}, {isError: 1, errorMsg: result.data._})
         }
     }
     ctx.body = {code: 1, msg: '订单提交成功'}

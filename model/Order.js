@@ -57,6 +57,8 @@ var OrderSchema = new Schema({
     AddedService: Array,
     isReview: {type: Number, default: 0}, //0未审核，1已审核
     isSub: {type: Number, default: 0}, //0未下单，1已下单
+    isError: {type: Number, default: 0}, //0正确， 1错误
+    errorMsg: String,
     createAt: {
         type: Number,
         default: Date.now()

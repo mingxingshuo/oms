@@ -4,10 +4,7 @@ var connect_url = require('../conf/proj.json').mongodb;
 var db = mongoose.createConnection(connect_url);
 
 var reviewOrderSchema = new Schema({
-    account_id: String,
-    customer_id: String,
     orderid: String,
-    mailno: String,
     j_company: String,
     j_contact: String,
     j_tel: String,
@@ -52,9 +49,6 @@ var reviewOrderSchema = new Schema({
     orderStateDesc: String,
     Cargo: Array,
     AddedService: Array,
-    isSub: {type: Number, default: 0}, //0未下单，1已下单
-    isError: {type: Number, default: 0}, //0正确， 1错误
-    errorMsg: String,
     createAt: {
         type: Number,
         default: Date.now()
