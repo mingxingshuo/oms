@@ -375,6 +375,7 @@ router.get('/find', async function (ctx, next) {
                 } else {
                     console.log(sql, '---------------------sql')
                     let orders = await OrderModel.find(sql).skip((page - 1) * 10).limit(10).sort(sort)
+                    console.log(orders, '---------------------orders')
                     let count = await OrderModel.count(sql)
                     if (orders.length > 0) {
                         ctx.body = {code: 1, msg: '查询成功', data: orders, count: count}
