@@ -208,7 +208,6 @@ router.post('/submit', async function (ctx, next) {
         console.log(orderid, '-------------------orderid')
         let order = await ReviewOrderModel.findOne({orderid: orderid})
         console.log(order, '-------------------order')
-        let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
         let xml = {
             Request: {
                 $: {service: 'OrderService', lang: 'zh-CN'},
@@ -284,7 +283,7 @@ router.post('/submit', async function (ctx, next) {
                 verifyCode: str
             }
         }
-        let result = await req(url, data)
+        let result = await req(data)
         console.log(JSON.stringify(result), '-------------------------result')
         if (result.type == 2) {
             let mailno = result['data']['$']['mailno']
@@ -541,7 +540,7 @@ function req(data) {
     return new Promise((resolve, reject) => {
         let url = "https://bsp-oisp.sf-express.com/bsp-oisp/sfexpressService"
         request.post(url, data, function (err, res, body) {
-            console.log(err,  body, '-----------------------result')
+            console.log(err, body, '-----------------------body')
             parser.parseString(body, function (err1, result) {
                 console.log(err1, result, '-----------------------result')
                 if (result.Response.ERROR) {

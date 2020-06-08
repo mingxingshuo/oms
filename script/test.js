@@ -13,11 +13,7 @@ async function a() {
     // let b = await OrderModel.update({userId:'5ea9557f1808c716481ee8b3'},{nickName:'测试'},{multi:true})
     // let b = await OrderModel.find({orderid:'GQ2020060315911716389840235'})
     // let b = await ReviewOrderModel.find()
-    let b = await OrderModel.find({
-        dealtype: {'$ne': 2},
-        parentId: '5ec63dc9e3f98c7b166139e4',
-        isReview: 1
-    })
+    let b = await OrderModel.find({orderid:'GQ2020060215910815021700929'})
     // let b = await PayModel.findOneAndUpdate({orderid:'GQ2020051315893651260870224'}, {
     //     info:[{type: "代收收款", money: 11, url: ""}],
     //     sum:11
@@ -70,7 +66,7 @@ async function test() {
 }
 // test()
 async function b() {
-    let data = await OrderModel.find({parentId: '5ec63dc9e3f98c7b166139e4', isReview: 1}).sort({createAt: -1})
+    let data = await OrderModel.find({parentId: '5ec63dc9e3f98c7b166139e4', isReview: 1}).sort({createAt:-1})
     let name = Date.now() + '.csv'
     const ws = fs.createWriteStream(__dirname + '/../public/data_file/' + name, {
         flags: 'w',
